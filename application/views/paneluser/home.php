@@ -283,115 +283,112 @@
             <p>Fasilitas modern dan lengkap untuk mendukung pembelajaran praktis dan klinis yang berkualitas tinggi</p>
         </div>
 
-        <div class="row align-items-center">
-            <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
-                <div class="features-grid">
-                    <!-- Feature 1: Lab Keperawatan -->
-                    <div class="feature-card">
-                        <div class="feature-number">01</div>
-                        <div class="feature-header">
-                            <div class="feature-icon">
-                                <i class="fas fa-procedures"></i>
-                            </div>
-                            <div>
-                                <div class="feature-subtitle">Simulasi Klinis</div>
-                                <h4 class="feature-title">Laboratorium Keperawatan</h4>
-                            </div>
-                        </div>
-                        <p class="feature-description">
-                            Lab simulasi dengan manikin canggih berteknologi tinggi untuk praktik keterampilan klinis keperawatan yang realistis dan komprehensif.
-                        </p>
-                        <div class="feature-highlights">
-                            <span class="feature-highlight">High-Fidelity Simulator</span>
-                            <span class="feature-highlight">VR Training</span>
-                            <span class="feature-highlight">Real-time Monitoring</span>
-                        </div>
-                        <a href="#" class="feature-link">
-                            Jelajahi Lab <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
+        <?php if (!empty($featured_facilities)): ?>
+            <div class="row align-items-stretch">
+                <?php foreach ($featured_facilities as $index => $facility): ?>
+                    <?php
+                    $highlights = $this->M_facilities->get_facility_highlights($facility->id);
+                    $col_class = ($index % 2 == 0) ? 'col-lg-6' : 'col-lg-6';
+                    $aos_direction = ($index % 2 == 0) ? 'fade-right' : 'fade-left';
+                    ?>
 
-                    <!-- Feature 2: Lab Kebidanan -->
-                    <div class="feature-card">
-                        <div class="feature-number">02</div>
-                        <div class="feature-header">
-                            <div class="feature-icon">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <div>
-                                <div class="feature-subtitle">Maternal Care</div>
-                                <h4 class="feature-title">Laboratorium Kebidanan</h4>
+                    <div class="<?= $col_class ?>" data-aos="<?= $aos_direction ?>" data-aos-delay="<?= ($index + 1) * 100 ?>">
+                        <div class="features-grid mb-4">
+                            <div class="feature-card">
+                                <div class="feature-number"><?= str_pad($facility->featured_order, 2, '0', STR_PAD_LEFT) ?></div>
+                                <div class="feature-header">
+                                    <div class="feature-icon" style="color: <?= $facility->category_color ?>;">
+                                        <i class="<?= $facility->icon ?>"></i>
+                                    </div>
+                                    <div>
+                                        <div class="feature-subtitle"><?= htmlspecialchars($facility->subtitle) ?></div>
+                                        <h4 class="feature-title"><?= htmlspecialchars($facility->title) ?></h4>
+                                    </div>
+                                </div>
+                                <p class="feature-description">
+                                    <?= $facility->short_description ?: character_limiter(strip_tags($facility->description), 120) ?>
+                                </p>
+
+                                <?php if (!empty($highlights)): ?>
+                                    <div class="feature-highlights">
+                                        <?php foreach ($highlights as $highlight): ?>
+                                            <span class="feature-highlight" style="border-color: <?= $highlight->color ?>; color: <?= $highlight->color ?>;">
+                                                <?= htmlspecialchars($highlight->title) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <a href="<?= site_url('facilities/detail/' . $facility->slug) ?>" class="feature-link">
+                                    Jelajahi Fasilitas <i class="fas fa-arrow-right"></i>
+                                </a>
                             </div>
                         </div>
-                        <p class="feature-description">
-                            Fasilitas praktik lengkap untuk simulasi persalinan, perawatan ibu hamil, dan neonatal dengan teknologi terdepan.
-                        </p>
-                        <div class="feature-highlights">
-                            <span class="feature-highlight">Birth Simulator</span>
-                            <span class="feature-highlight">Neonatal Care</span>
-                            <span class="feature-highlight">Emergency Training</span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <!-- Default facilities jika tidak ada data -->
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
+                    <div class="features-grid">
+                        <!-- Feature 1: Lab Keperawatan -->
+                        <div class="feature-card">
+                            <div class="feature-number">01</div>
+                            <div class="feature-header">
+                                <div class="feature-icon">
+                                    <i class="fas fa-procedures"></i>
+                                </div>
+                                <div>
+                                    <div class="feature-subtitle">Simulasi Klinis</div>
+                                    <h4 class="feature-title">Laboratorium Keperawatan</h4>
+                                </div>
+                            </div>
+                            <p class="feature-description">
+                                Lab simulasi dengan manikin canggih berteknologi tinggi untuk praktik keterampilan klinis keperawatan yang realistis dan komprehensif.
+                            </p>
+                            <div class="feature-highlights">
+                                <span class="feature-highlight">High-Fidelity Simulator</span>
+                                <span class="feature-highlight">VR Training</span>
+                                <span class="feature-highlight">Real-time Monitoring</span>
+                            </div>
+                            <a href="#" class="feature-link">
+                                Jelajahi Lab <i class="fas fa-arrow-right"></i>
+                            </a>
                         </div>
-                        <a href="#" class="feature-link">
-                            Lihat Fasilitas <i class="fas fa-arrow-right"></i>
-                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                    <div class="features-grid">
+                        <!-- Feature 2: Lab Kebidanan -->
+                        <div class="feature-card">
+                            <div class="feature-number">02</div>
+                            <div class="feature-header">
+                                <div class="feature-icon">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                                <div>
+                                    <div class="feature-subtitle">Maternal Care</div>
+                                    <h4 class="feature-title">Laboratorium Kebidanan</h4>
+                                </div>
+                            </div>
+                            <p class="feature-description">
+                                Fasilitas praktik lengkap untuk simulasi persalinan, perawatan ibu hamil, dan neonatal dengan teknologi terdepan.
+                            </p>
+                            <div class="feature-highlights">
+                                <span class="feature-highlight">Birth Simulator</span>
+                                <span class="feature-highlight">Neonatal Care</span>
+                                <span class="feature-highlight">Emergency Training</span>
+                            </div>
+                            <a href="#" class="feature-link">
+                                Lihat Fasilitas <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
-                <div class="features-grid">
-                    <!-- Feature 3: Rumah Sakit Pendidikan -->
-                    <div class="feature-card">
-                        <div class="feature-number">03</div>
-                        <div class="feature-header">
-                            <div class="feature-icon">
-                                <i class="fas fa-hospital-alt"></i>
-                            </div>
-                            <div>
-                                <div class="feature-subtitle">Clinical Practice</div>
-                                <h4 class="feature-title">Rumah Sakit Pendidikan</h4>
-                            </div>
-                        </div>
-                        <p class="feature-description">
-                            Praktik langsung di rumah sakit mitra dengan supervisi dosen berpengalaman dan perawat senior untuk pengalaman klinis nyata.
-                        </p>
-                        <div class="feature-highlights">
-                            <span class="feature-highlight">Real Patient Care</span>
-                            <span class="feature-highlight">Expert Supervision</span>
-                            <span class="feature-highlight">Case Studies</span>
-                        </div>
-                        <a href="#" class="feature-link">
-                            Program Magang <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <!-- Feature 4: Lab Sains Dasar -->
-                    <div class="feature-card">
-                        <div class="feature-number">04</div>
-                        <div class="feature-header">
-                            <div class="feature-icon">
-                                <i class="fas fa-microscope"></i>
-                            </div>
-                            <div>
-                                <div class="feature-subtitle">Medical Sciences</div>
-                                <h4 class="feature-title">Laboratorium Sains Dasar</h4>
-                            </div>
-                        </div>
-                        <p class="feature-description">
-                            Lab anatomi, fisiologi, dan biokimia dengan peralatan canggih untuk pemahaman mendalam ilmu dasar kesehatan.
-                        </p>
-                        <div class="feature-highlights">
-                            <span class="feature-highlight">3D Anatomy</span>
-                            <span class="feature-highlight">Digital Microscopy</span>
-                            <span class="feature-highlight">Interactive Learning</span>
-                        </div>
-                        <a href="#" class="feature-link">
-                            Eksplorasi Lab <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
 
         <!-- Illustration Section -->
         <div class="row mt-5">
@@ -405,6 +402,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- View All Facilities Button -->
+        <?php if (!empty($featured_facilities) && count($featured_facilities) >= 3): ?>
+            <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+                <a href="<?= site_url('facilities') ?>" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-building me-2"></i>Lihat Semua Fasilitas
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 

@@ -11,6 +11,7 @@ class Home extends CI_Controller
 		$this->load->model('M_prodi');
 		$this->load->model('M_news');
 		$this->load->model('M_sliders');
+		$this->load->model('M_facilities');
 		$this->load->helper(['text', 'url']);
 	}
 
@@ -42,6 +43,10 @@ class Home extends CI_Controller
 
 		// Data slider untuk homepage
 		$data['sliders'] = $this->M_sliders->get_active_sliders();
+
+		// Data fasilitas untuk homepage
+		$data['featured_facilities'] = $this->M_facilities->get_featured_facilities(4);
+		$data['facility_categories'] = $this->M_facilities->get_categories();
 
 		$data['content'] = 'paneluser/home';
 		$this->load->view('layouts/user_layout', $data);

@@ -111,15 +111,23 @@
                           <a href="<?php echo base_url('admin/prodi'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'prodi' ? 'active' : ''; ?>">
                               <i class="nav-icon fas fa-file"></i>
                               <p>
-                                  Master Prodi
+                                  Master Study Program
                               </p>
                           </a>
                       </li>
                       <li class="nav-item">
-                          <a href="<?php echo base_url('admin/fasilitas'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'fasilitas' ? 'active' : ''; ?>">
-                              <i class="nav-icon fas fa-file"></i>
+                          <a href="<?php echo base_url('admin/facilities'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'facilities' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-building"></i>
                               <p>
-                                  Master Fasilitas
+                                  Master Facilities
+                              </p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/facility_categories'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'facility_categories' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-tags"></i>
+                              <p>
+                                  Facility Categories
                               </p>
                           </a>
                       </li>
