@@ -1,0 +1,17 @@
+/* Default hero background jika belum ada gambar */
+.hero-slide-default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Alternative gradient backgrounds */
+.hero-slide-alt-1 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.hero-slide-alt-2 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.hero-slide-alt-3 {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}

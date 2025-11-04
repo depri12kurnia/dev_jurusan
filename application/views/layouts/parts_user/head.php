@@ -20,6 +20,7 @@
         --accent-color: #F8FDFC;
         --text-dark: #2C3E50;
         --text-light: #6C757D;
+        --border-color: #00B9AD;
     }
 
     body {

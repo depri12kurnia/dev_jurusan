@@ -123,7 +123,7 @@ class M_news extends CI_Model
         $news = $this->get_by_id($id);
 
         if ($news && !empty($news->thumbnail)) {
-            $thumbnail_path = FCPATH . 'assets/uploads/news/' . $news->thumbnail;
+            $thumbnail_path = FCPATH . 'public/uploads/news/' . $news->thumbnail;
             if (file_exists($thumbnail_path)) {
                 unlink($thumbnail_path);
             }

@@ -1,27 +1,88 @@
 <!-- Hero Section -->
-<section id="home" class="hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="hero-content" data-aos="fade-right" data-aos-duration="1000">
-                    <h1>Fakultas Kesehatan</h1>
-                    <p>Membangun generasi tenaga kesehatan profesional yang kompeten dan berjiwa sosial tinggi. Bergabunglah dengan kami untuk memberikan pelayanan kesehatan terbaik bagi masyarakat!</p>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <button class="btn btn-hero">Daftar Sekarang</button>
-                        <button class="btn btn-hero">Info Pendaftaran</button>
+<section id="home" class="hero hero-slider" role="region" aria-label="Hero Slider">
+    <?php if (!empty($sliders)): ?>
+        <!-- Slider Background Images -->
+        <div class="hero-slides" role="img" aria-live="polite" aria-atomic="true">
+            <?php foreach ($sliders as $index => $slider): ?>
+                <div class="hero-slide <?= $index === 0 ? 'active' : '' ?>"
+                    style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('<?= !empty($slider->image) ? base_url('public/uploads/sliders/' . $slider->image) : base_url('assets/img/hero-bg.jpg') ?>');">
+                    <div class="container h-100">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-7 col-md-8">
+                                <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+                                    <h1><?= !empty($slider->title) ? htmlspecialchars($slider->title) : 'Fakultas Kesehatan' ?></h1>
+                                    <p>Membangun generasi tenaga kesehatan profesional yang kompeten dan berjiwa sosial tinggi. Bergabunglah dengan kami untuk memberikan pelayanan kesehatan terbaik bagi masyarakat!</p>
+                                    <div class="hero-buttons">
+                                        <a href="#programs" class="btn btn-hero btn-primary">Daftar Sekarang</a>
+                                        <a href="#news" class="btn btn-hero btn-outline">Info Pendaftaran</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-4 d-none d-md-block">
+                                <div class="hero-decoration" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                                    <div class="decoration-icon">
+                                        <i class="fas fa-user-nurse"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Slider Controls -->
+        <?php if (count($sliders) > 1): ?>
+            <div class="hero-controls" role="group" aria-label="Slider Navigation">
+                <button class="hero-control hero-prev" aria-label="Previous slide" title="Previous slide">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button class="hero-control hero-next" aria-label="Next slide" title="Next slide">
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="col-lg-6">
-                <div data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                    <div class="text-center">
-                        <i class="fas fa-user-nurse" style="font-size: 20rem; opacity: 0.1;"></i>
+
+            <!-- Slider Indicators -->
+            <div class="hero-indicators" role="group" aria-label="Slide indicators">
+                <?php foreach ($sliders as $index => $slider): ?>
+                    <button class="hero-indicator <?= $index === 0 ? 'active' : '' ?>"
+                        aria-label="Go to slide <?= $index + 1 ?>"
+                        title="Slide <?= $index + 1 ?>: <?= htmlspecialchars($slider->title) ?>">
+                    </button>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?> <?php else: ?>
+        <!-- Default Hero when no slider data -->
+        <div class="hero-slide active" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('<?= base_url('assets/img/hero-bg.jpg') ?>');">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-lg-7 col-md-8">
+                        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+                            <h1>Fakultas Kesehatan</h1>
+                            <p>Membangun generasi tenaga kesehatan profesional yang kompeten dan berjiwa sosial tinggi. Bergabunglah dengan kami untuk memberikan pelayanan kesehatan terbaik bagi masyarakat!</p>
+                            <div class="hero-buttons">
+                                <a href="#programs" class="btn btn-hero btn-primary">Daftar Sekarang</a>
+                                <a href="#news" class="btn btn-hero btn-outline">Info Pendaftaran</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-4 d-none d-md-block">
+                        <div class="hero-decoration" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                            <div class="decoration-icon">
+                                <i class="fas fa-user-nurse"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 </section>
+
+<!-- Hero Slider Assets -->
+<link rel="stylesheet" href="<?= base_url('assets/css/hero-slider.css') ?>">
+<link rel="stylesheet" href="<?= base_url('assets/css/hero-gradients.css') ?>">
+<script src="<?= base_url('assets/js/hero-slider.js') ?>"></script>
 
 <!-- Stats Section -->
 <section class="stats">
@@ -434,7 +495,6 @@
                 </div>
             <?php endif; ?>
         </div>
-
         <?php if (!empty($get_featured_news) || (!empty($latest_news) && count($latest_news) >= 3)): ?>
             <div class="text-center mt-4">
                 <a href="<?= site_url('news') ?>" class="btn btn-outline-primary btn-lg">

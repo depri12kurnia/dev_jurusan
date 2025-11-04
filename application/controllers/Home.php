@@ -10,6 +10,7 @@ class Home extends CI_Controller
 		$this->load->model('M_settings');
 		$this->load->model('M_prodi');
 		$this->load->model('M_news');
+		$this->load->model('M_sliders');
 		$this->load->helper(['text', 'url']);
 	}
 
@@ -38,6 +39,9 @@ class Home extends CI_Controller
 		// Data berita untuk homepage
 		$data['get_featured_news'] = $this->M_news->get_featured_news(3); // 3 berita unggulan
 		$data['latest_news'] = $this->M_news->get_latest_news(6); // 6 berita terbaru
+
+		// Data slider untuk homepage
+		$data['sliders'] = $this->M_sliders->get_active_sliders();
 
 		$data['content'] = 'paneluser/home';
 		$this->load->view('layouts/user_layout', $data);

@@ -92,4 +92,15 @@ class M_sliders extends CI_Model
     {
         return $this->db->delete($this->table, ['id' => $id]);
     }
+
+    // Method untuk mengambil slider aktif untuk homepage
+    public function get_active_sliders()
+    {
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('status', 'Active');
+        $this->db->order_by('id', 'asc');
+        $query = $this->db->get();
+        return $query->result();
+    }
 }
