@@ -354,48 +354,96 @@
             <h2>Berita & Kegiatan</h2>
             <p>Update terbaru seputar kegiatan akademik, praktik klinik, dan prestasi mahasiswa kesehatan</p>
         </div>
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="news-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="news-image">
-                        <div class="news-date">15 Nov 2025</div>
-                    </div>
-                    <div class="news-content">
-                        <h4 class="news-title">Mahasiswa Keperawatan Raih Juara Lomba Inovasi Kesehatan</h4>
-                        <p class="news-excerpt">Tim mahasiswa berhasil menciptakan alat bantu kesehatan inovatif dan meraih juara pertama tingkat nasional...</p>
-                        <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="news-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="news-image">
-                        <div class="news-date">10 Nov 2025</div>
-                    </div>
-                    <div class="news-content">
-                        <h4 class="news-title">Kerjasama dengan RSUD untuk Program Magang</h4>
-                        <p class="news-excerpt">Fakultas menjalin kerjasama dengan 15 rumah sakit untuk program magang dan praktik klinik mahasiswa...</p>
-                        <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="news-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="news-image">
-                        <div class="news-date">5 Nov 2025</div>
-                    </div>
-                    <div class="news-content">
-                        <h4 class="news-title">Seminar Kesehatan Ibu dan Anak</h4>
-                        <p class="news-excerpt">Seminar nasional dengan tema terkini dalam pelayanan kesehatan maternal dan neonatal...</p>
-                        <a href="#" class="news-link">Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- CTA Section -->
+        <!-- News Container -->
+        <div id="news-container" class="row g-4">
+            <?php if (!empty($get_featured_news)): ?>
+                <?php foreach ($get_featured_news as $index => $news): ?>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="news-card" data-aos="fade-up" data-aos-delay="<?= ($index + 1) * 100 ?>">
+                            <div class="news-image" style="background-image: url('<?= !empty($news->thumbnail) ? base_url('public/uploads/news/' . $news->thumbnail) : base_url('assets/img/default-news.jpg') ?>');">
+                                <div class="news-date"><?= date('d M Y', strtotime($news->published_at)) ?></div>
+                                <?php if (!empty($news->category_name)): ?>
+                                    <div class="news-category"><?= $news->category_name ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="news-content">
+                                <h4 class="news-title"><?= $news->title ?></h4>
+                                <p class="news-excerpt">
+                                    <?= !empty($news->excerpt) ? character_limiter($news->excerpt, 120) : character_limiter(strip_tags($news->content), 120) ?>
+                                </p>
+                                <a href="<?= site_url('news/detail/' . $news->slug) ?>" class="news-link">
+                                    Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Default news jika tidak ada data -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
+                            <div class="news-date"><?= date('d M Y') ?></div>
+                            <div class="news-category">Pengumuman</div>
+                        </div>
+                        <div class="news-content">
+                            <h4 class="news-title">Selamat Datang di Portal Berita</h4>
+                            <p class="news-excerpt">
+                                Portal berita resmi Fakultas Kesehatan yang menyajikan informasi terkini seputar kegiatan akademik dan prestasi mahasiswa.
+                            </p>
+                            <a href="<?= site_url('news') ?>" class="news-link">
+                                Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
+                            <div class="news-date"><?= date('d M Y') ?></div>
+                            <div class="news-category">Informasi</div>
+                        </div>
+                        <div class="news-content">
+                            <h4 class="news-title">Pendaftaran Mahasiswa Baru</h4>
+                            <p class="news-excerpt">
+                                Informasi pendaftaran mahasiswa baru untuk program studi unggulan di Fakultas Kesehatan.
+                            </p>
+                            <a href="<?= site_url('news') ?>" class="news-link">
+                                Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="news-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
+                            <div class="news-date"><?= date('d M Y') ?></div>
+                            <div class="news-category">Kegiatan</div>
+                        </div>
+                        <div class="news-content">
+                            <h4 class="news-title">Kegiatan Praktik Klinik</h4>
+                            <p class="news-excerpt">
+                                Kegiatan praktik klinik mahasiswa di rumah sakit mitra untuk pengalaman langsung di dunia kesehatan.
+                            </p>
+                            <a href="<?= site_url('news') ?>" class="news-link">
+                                Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <?php if (!empty($get_featured_news) || (!empty($latest_news) && count($latest_news) >= 3)): ?>
+            <div class="text-center mt-4">
+                <a href="<?= site_url('news') ?>" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-newspaper me-2"></i>Lihat Semua Berita
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
+</section><!-- CTA Section -->
 <section class="cta">
     <div class="container">
         <div data-aos="fade-up">

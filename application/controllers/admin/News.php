@@ -73,7 +73,7 @@ class News extends CI_Controller
 
             // Thumbnail
             $thumbnail = !empty($x->thumbnail)
-                ? '<img src="' . base_url('assets/uploads/news/' . $x->thumbnail) . '" class="img-thumbnail" style="max-width: 60px; max-height: 60px;" alt="Thumbnail">'
+                ? '<img src="' . base_url('public/uploads/news/' . $x->thumbnail) . '" class="img-thumbnail" style="max-width: 60px; max-height: 60px;" alt="Thumbnail">'
                 : '<div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fas fa-image text-muted"></i></div>';
             $row[] = $thumbnail;
 

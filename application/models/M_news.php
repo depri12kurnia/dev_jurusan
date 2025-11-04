@@ -2,9 +2,35 @@
 class M_news extends CI_Model
 {
     var $table = 'news';
-    var $column_order = array('id', 'category_id', 'title', 'slug', 'author', 'status', 'published_at');
-    var $column_search = array('title', 'slug', 'author');
-    var $order = array('published_at' => 'asc');
+    var $column_order = array('news.id', 'news.category_id', 'news.title', 'news.slug', 'news.author', 'news.status', 'news.published_at');
+    var $column_search = array('news.title', 'news.slug', 'users.username');
+    var $order = array('news.published_at' => 'asc');
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->check_views_column();
+    }
+
+    /**
+     * Check if views column exists, create if not
+     */
+    private function check_views_column()
+    {
+        $fields = $this->db->list_fields($this->table);
+        if (!in_array('views', $fields)) {
+            $this->db->query("ALTER TABLE {$this->table} ADD COLUMN views INT(11) DEFAULT 0 AFTER status");
+        }
+    }
+
+    /**
+     * Check if views column exists
+     */
+    private function has_views_column()
+    {
+        $fields = $this->db->list_fields($this->table);
+        return in_array('views', $fields);
+    }
 
     private function _get_datatables_query()
     {
@@ -64,7 +90,7 @@ class M_news extends CI_Model
 
     public function get_category()
     {
-        $this->db->select('id, name');
+        $this->db->select('id, name, slug');
         $this->db->from('category');
         $query = $this->db->get();
         return $query->result();
@@ -112,15 +138,15 @@ class M_news extends CI_Model
         $total = $this->db->count_all($this->table);
 
         // Published news
-        $this->db->where('status', 'published');
+        $this->db->where('news.status', 'published');
         $published = $this->db->count_all_results($this->table);
 
         // Draft news
-        $this->db->where('status', 'draft');
+        $this->db->where('news.status', 'draft');
         $draft = $this->db->count_all_results($this->table);
 
         // Today's news
-        $this->db->where('DATE(published_at)', date('Y-m-d'));
+        $this->db->where('DATE(news.published_at)', date('Y-m-d'));
         $today = $this->db->count_all_results($this->table);
 
         return [
@@ -146,8 +172,8 @@ class M_news extends CI_Model
         $this->db->from($this->table);
         $this->db->join('category', 'category.id = news.category_id', 'left');
         $this->db->join('users', 'users.id = news.author', 'left');
-        $this->db->where('status', 'published');
-        $this->db->order_by('published_at', 'DESC');
+        $this->db->where('news.status', 'published');
+        $this->db->order_by('news.published_at', 'DESC');
         $this->db->limit($limit);
         $query = $this->db->get();
         return $query->result();
@@ -159,29 +185,51 @@ class M_news extends CI_Model
         $this->db->from($this->table);
         $this->db->join('category', 'category.id = news.category_id', 'left');
         $this->db->join('users', 'users.id = news.author', 'left');
-        $this->db->where('status', 'published');
-        $this->db->order_by('views', 'DESC');
+        $this->db->where('news.status', 'published');
+
+        // Order by views (column should exist after constructor check)
+        if ($this->has_views_column()) {
+            $this->db->order_by('news.views', 'DESC');
+        } else {
+            // Fallback to published_at if views column doesn't exist
+            $this->db->order_by('news.published_at', 'DESC');
+        }
+
         $this->db->limit($limit);
         $query = $this->db->get();
         return $query->result();
     }
-
     public function increment_views($id)
     {
-        $this->db->where('id', $id);
-        $this->db->set('views', 'views + 1', FALSE);
-        return $this->db->update($this->table);
-    }
+        // SUPER SAFE METHOD - Use raw SQL to avoid Active Record issues
+        $id = (int)$id;
+        if ($id <= 0) {
+            return false;
+        }
 
+        // Use direct SQL query with prepared statement
+        $sql = "UPDATE {$this->table} SET views = COALESCE(views, 0) + 1 WHERE id = ? LIMIT 1";
+
+        // Execute with query() method
+        $result = $this->db->query($sql, array($id));
+
+        // Check affected rows - MUST be exactly 1
+        $affected = $this->db->affected_rows();
+
+        // Log for debugging
+        log_message('info', "increment_views: ID=$id, affected_rows=$affected, success=" . ($result ? 'true' : 'false'));
+
+        return $result && $affected == 1;
+    }
     public function get_news_by_category($category_id, $limit = null)
     {
         $this->db->select('news.*, category.name as category_name, users.username as author_name');
         $this->db->from($this->table);
         $this->db->join('category', 'category.id = news.category_id', 'left');
         $this->db->join('users', 'users.id = news.author', 'left');
-        $this->db->where('category_id', $category_id);
-        $this->db->where('status', 'published');
-        $this->db->order_by('published_at', 'DESC');
+        $this->db->where('news.category_id', $category_id);
+        $this->db->where('news.status', 'published');
+        $this->db->order_by('news.published_at', 'DESC');
 
         if ($limit) {
             $this->db->limit($limit);
@@ -197,14 +245,180 @@ class M_news extends CI_Model
         $this->db->from($this->table);
         $this->db->join('category', 'category.id = news.category_id', 'left');
         $this->db->join('users', 'users.id = news.author', 'left');
-        $this->db->where('status', 'published');
+        $this->db->where('news.status', 'published');
         $this->db->group_start();
-        $this->db->like('title', $keyword);
-        $this->db->or_like('content', $keyword);
-        $this->db->or_like('excerpt', $keyword);
+        $this->db->like('news.title', $keyword);
+        $this->db->or_like('news.content', $keyword);
+        $this->db->or_like('news.excerpt', $keyword);
         $this->db->group_end();
-        $this->db->order_by('published_at', 'DESC');
+        $this->db->order_by('news.published_at', 'DESC');
         $query = $this->db->get();
         return $query->result();
+    }
+
+    // Methods for frontend news controller
+
+    public function count_published_news()
+    {
+        $this->db->where('news.status', 'published');
+        return $this->db->count_all_results($this->table);
+    }
+
+    public function get_published_news($limit, $offset)
+    {
+        $this->db->select('news.*, category.name as category_name, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.status', 'published');
+        $this->db->order_by('news.published_at', 'DESC');
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function get_by_slug($slug)
+    {
+        $this->db->select('news.*, category.name as category_name, category.slug as category_slug, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.slug', $slug);
+        $query = $this->db->get();
+        return $query->row();
+    }
+
+    public function get_related_news($category_id, $exclude_id, $limit = 4)
+    {
+        $this->db->select('news.*, category.name as category_name, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.category_id', $category_id);
+        $this->db->where('news.status', 'published');
+        $this->db->where('news.id !=', $exclude_id);
+        $this->db->order_by('news.published_at', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function count_search_results($keyword)
+    {
+        $this->db->from($this->table);
+        $this->db->where('news.status', 'published');
+        $this->db->group_start();
+        $this->db->like('news.title', $keyword);
+        $this->db->or_like('news.content', $keyword);
+        $this->db->or_like('news.excerpt', $keyword);
+        $this->db->group_end();
+        return $this->db->count_all_results();
+    }
+
+    public function search_news_paginated($keyword, $limit, $offset)
+    {
+        $this->db->select('news.*, category.name as category_name, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.status', 'published');
+        $this->db->group_start();
+        $this->db->like('news.title', $keyword);
+        $this->db->or_like('news.content', $keyword);
+        $this->db->or_like('news.excerpt', $keyword);
+        $this->db->group_end();
+        $this->db->order_by('news.published_at', 'DESC');
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function get_category_by_slug($slug)
+    {
+        $this->db->select('*');
+        $this->db->from('category');
+        $this->db->where('slug', $slug);
+        $query = $this->db->get();
+        return $query->row();
+    }
+
+    public function count_news_by_category($category_id)
+    {
+        $this->db->where('news.category_id', $category_id);
+        $this->db->where('news.status', 'published');
+        return $this->db->count_all_results($this->table);
+    }
+
+    public function get_news_by_category_paginated($category_id, $limit, $offset)
+    {
+        $this->db->select('news.*, category.name as category_name, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.category_id', $category_id);
+        $this->db->where('news.status', 'published');
+        $this->db->order_by('news.published_at', 'DESC');
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function get_featured_news($limit = 3)
+    {
+        // Check if is_featured column exists
+        $fields = $this->db->list_fields($this->table);
+        $has_featured_column = in_array('is_featured', $fields);
+
+        $this->db->select('news.*, category.name as category_name, users.username as author_name');
+        $this->db->from($this->table);
+        $this->db->join('category', 'category.id = news.category_id', 'left');
+        $this->db->join('users', 'users.id = news.author', 'left');
+        $this->db->where('news.status', 'published');
+
+        if ($has_featured_column) {
+            $this->db->where('news.is_featured', 1);
+        }
+
+        $this->db->order_by('news.published_at', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get();
+
+        // If no featured news or no featured column, get latest news instead
+        if ($query->num_rows() == 0 || !$has_featured_column) {
+            return $this->get_latest_news($limit);
+        }
+
+        return $query->result();
+    }
+
+    public function get_public_statistics()
+    {
+        // Total published news
+        $this->db->where('news.status', 'published');
+        $total_published = $this->db->count_all_results($this->table);
+
+        // News this month
+        $this->db->where('news.status', 'published');
+        $this->db->where('MONTH(news.published_at)', date('m'));
+        $this->db->where('YEAR(news.published_at)', date('Y'));
+        $this_month = $this->db->count_all_results($this->table);
+
+        // Total categories with news
+        $this->db->select('DISTINCT news.category_id');
+        $this->db->where('news.status', 'published');
+        $categories_with_news = $this->db->count_all_results($this->table);
+
+        // Total views (if views column exists)
+        $this->db->select_sum('news.views');
+        $this->db->where('news.status', 'published');
+        $query = $this->db->get($this->table);
+        $total_views = $query->row()->views ?? 0;
+
+        return [
+            'total_published' => $total_published,
+            'this_month' => $this_month,
+            'categories_with_news' => $categories_with_news,
+            'total_views' => $total_views
+        ];
     }
 }

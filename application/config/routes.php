@@ -67,6 +67,27 @@ $route['program-studi/unggulan'] = 'program_studi/unggulan';
 $route['program-studi/ajax-get-programs'] = 'program_studi/ajax_get_programs';
 $route['program-studi/(:any)'] = 'program_studi/detail/$1';
 
+// News Routes (Frontend)
+$route['news'] = 'news/index';
+$route['news/page/(:num)'] = 'news/index/$1';
+$route['news/search'] = 'news/search';
+$route['news/category/(:any)'] = 'news/category/$1';
+$route['news/category/(:any)/(:num)'] = 'news/category/$1/$2';
+$route['news/(:any)'] = 'news/detail/$1';
+
+// API Routes for News
+$route['api/news/latest'] = 'news/get_latest_news';
+$route['api/news/latest/(:num)'] = 'news/get_latest_news/$1';
+$route['api/news/featured'] = 'news/get_featured_news';
+$route['api/news/featured/(:num)'] = 'news/get_featured_news/$1';
+$route['api/news/popular'] = 'news/get_popular_news';
+$route['api/news/popular/(:num)'] = 'news/get_popular_news/$1';
+$route['api/news/widget/(:any)'] = 'news/widget/$1';
+$route['api/news/widget/(:any)/(:num)'] = 'news/widget/$1/$2';
+$route['api/news/category/(:num)'] = 'news/get_news_by_category/$1';
+$route['api/news/category/(:num)/(:num)'] = 'news/get_news_by_category/$1/$2';
+$route['api/news/stats'] = 'news/get_stats';
+
 // Other Frontend Routes
 $route['tentang'] = 'pages/about';
 $route['kontak'] = 'pages/contact';

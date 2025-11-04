@@ -9,6 +9,8 @@ class Home extends CI_Controller
 		parent::__construct();
 		$this->load->model('M_settings');
 		$this->load->model('M_prodi');
+		$this->load->model('M_news');
+		$this->load->helper(['text', 'url']);
 	}
 
 	public function index()
@@ -32,6 +34,10 @@ class Home extends CI_Controller
 			'total_alumni' => $this->M_prodi->sum_alumni(),
 			'rata_akreditasi_a' => $this->M_prodi->count_akreditasi_a()
 		];
+
+		// Data berita untuk homepage
+		$data['get_featured_news'] = $this->M_news->get_featured_news(3); // 3 berita unggulan
+		$data['latest_news'] = $this->M_news->get_latest_news(6); // 6 berita terbaru
 
 		$data['content'] = 'paneluser/home';
 		$this->load->view('layouts/user_layout', $data);
