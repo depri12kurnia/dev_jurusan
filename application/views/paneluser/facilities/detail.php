@@ -358,23 +358,37 @@
     }
 </style>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb-section">
+<!-- Hero Section -->
+<div class="hero-section">
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= site_url('') ?>">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="<?= site_url('facilities') ?>">Fasilitas</a></li>
-                <?php if (!empty($facility->category_name)): ?>
-                    <li class="breadcrumb-item">
-                        <a href="<?= site_url('facilities/category/' . $facility->slug) ?>">
-                            <?= $facility->category_name ?>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <li class="breadcrumb-item active" aria-current="page"><?= character_limiter($facility->title, 50) ?></li>
-            </ol>
-        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">
+                    <i class="<?= !empty($facility->icon) ? $facility->icon : 'fas fa-building' ?> me-3"></i>
+                    <?= htmlspecialchars($facility->title) ?>
+                </h1>
+                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <?= !empty($facility->subtitle) ? htmlspecialchars($facility->subtitle) : 'Fasilitas lengkap dan modern untuk mendukung proses pembelajaran dan praktik mahasiswa' ?>
+                </p>
+                <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
+                    <?php if (!empty($facility->category_name)): ?>
+                        <span class="badge bg-white text-primary px-3 py-2">
+                            <i class="fas fa-tag me-2"></i>
+                            <?= htmlspecialchars($facility->category_name) ?>
+                        </span>
+                    <?php endif; ?>
+                    <span class="badge bg-white text-primary px-3 py-2">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <?= date('d M Y', strtotime($facility->created_at ?? date('Y-m-d'))) ?>
+                    </span>
+                    <?php if ($facility->is_featured == 'Yes'): ?>
+                        <span class="badge bg-white text-warning px-3 py-2">
+                            <i class="fas fa-star me-2"></i>Unggulan
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

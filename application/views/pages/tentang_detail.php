@@ -1,20 +1,32 @@
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">
+                    <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-info-circle' ?> me-3"></i>
+                    <?= htmlspecialchars($item->title) ?>
+                </h1>
+                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                    Mengenal lebih dekat Fakultas Kesehatan, visi misi, sejarah, dan komitmen kami dalam pendidikan kesehatan
+                </p>
+                <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
+                    <span class="badge bg-white text-info px-3 py-2">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <?= date('d M Y', strtotime($item->created_at ?? date('Y-m-d'))) ?>
+                    </span>
+                    <span class="badge bg-white text-info px-3 py-2">
+                        <i class="fas fa-info-circle me-2"></i>Tentang Kami
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Tentang (About) Content Page -->
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <!-- Page Header -->
-            <div class="text-center mb-5">
-                <div class="d-inline-flex align-items-center justify-content-center bg-info text-white rounded-circle mb-3"
-                    style="width: 80px; height: 80px; font-size: 2rem;">
-                    <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-info-circle' ?>"></i>
-                </div>
-                <h1 class="display-5 fw-bold text-dark mb-3"><?= htmlspecialchars($item->title) ?></h1>
-                <div class="text-muted">
-                    <i class="fas fa-calendar-alt me-2"></i>
-                    Dipublikasikan: <?= date('d F Y', strtotime($item->created_at ?? date('Y-m-d'))) ?>
-                </div>
-            </div>
-
             <!-- Content -->
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">

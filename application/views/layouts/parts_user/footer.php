@@ -16,7 +16,7 @@
                 <h5>Program Studi</h5>
                 <ul class="list-unstyled">
                     <?php if (!empty($program_studi_all)): ?>
-                        <?php foreach (array_slice($program_studi_all, 0, 4) as $prodi): ?>
+                        <?php foreach ($program_studi_all as $prodi): ?>
                             <li>
                                 <a href="<?= site_url('program-studi/' . $prodi->slug) ?>">
                                     <?= $prodi->jenjang ?> <?= $prodi->nama_prodi ?>

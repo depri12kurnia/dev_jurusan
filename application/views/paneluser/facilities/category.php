@@ -425,16 +425,36 @@
     }
 </style>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb-section">
+<!-- Hero Section -->
+<div class="hero-section">
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= site_url('') ?>">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="<?= site_url('facilities') ?>">Fasilitas</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($category->name) ?></li>
-            </ol>
-        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">
+                    <i class="<?= !empty($category->icon) ? $category->icon : 'fas fa-building' ?> me-3"></i>
+                    <?= htmlspecialchars($category->name) ?>
+                </h1>
+                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <?= !empty($category->description) ? htmlspecialchars($category->description) : 'Jelajahi fasilitas kategori ' . htmlspecialchars($category->name) . ' yang lengkap dan modern untuk mendukung proses pembelajaran' ?>
+                </p>
+                <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
+                    <span class="badge bg-white text-primary px-3 py-2">
+                        <i class="fas fa-list me-2"></i>
+                        <?= number_format($total_facilities) ?> Fasilitas
+                    </span>
+                    <span class="badge bg-white text-primary px-3 py-2">
+                        <i class="fas fa-tag me-2"></i>
+                        Kategori <?= htmlspecialchars($category->name) ?>
+                    </span>
+                    <?php if ($featured_count > 0): ?>
+                        <span class="badge bg-white text-warning px-3 py-2">
+                            <i class="fas fa-star me-2"></i>
+                            <?= number_format($featured_count) ?> Unggulan
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -626,7 +646,7 @@
                             </div>
                             <div class="category-item-content">
                                 <h6><?= htmlspecialchars($other_cat->name) ?></h6>
-                                <small><?= $other_cat->facility_count ?> fasilitas</small>
+                                <small><?= isset($other_cat->facility_count) ? $other_cat->facility_count : (isset($other_cat->facilities_count) ? $other_cat->facilities_count : '0') ?> fasilitas</small>
                             </div>
                         </a>
                     <?php endforeach; ?>

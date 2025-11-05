@@ -18,7 +18,7 @@ class Home extends CI_Controller
 	public function index()
 	{
 		$data['website'] = $this->M_settings->get_all_settings();
-		$data['title'] = 'Selamat Datang di Fakultas Kesehatan';
+		$data['title'] = 'Selamat Datang di Jurusan Poltekkes Kemenkes Jakarta III';
 
 		// Data Program Studi untuk homepage
 		$data['program_studi_featured'] = $this->M_prodi->get_featured(3); // 3 program studi featured
