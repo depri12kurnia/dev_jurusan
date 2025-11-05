@@ -225,4 +225,17 @@ class M_settings extends CI_Model
         $this->db->trans_complete();
         return $this->db->trans_status();
     }
+
+    /**
+     * Get logo and name for navbar
+     * @return object|null
+     */
+    public function get_navbar_logo()
+    {
+        $this->db->select('logo, name');
+        $this->db->order_by('id', 'ASC');
+        $this->db->limit(1);
+        $query = $this->db->get($this->table);
+        return $query->row();
+    }
 }

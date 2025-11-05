@@ -105,6 +105,19 @@ $route['api/news/category/(:num)'] = 'news/get_news_by_category/$1';
 $route['api/news/category/(:num)/(:num)'] = 'news/get_news_by_category/$1/$2';
 $route['api/news/stats'] = 'news/get_stats';
 
+// Academic Routes (Frontend)
+$route['akademik/(:any)'] = 'akademik/index/$1';
+$route['akademik'] = 'akademik';
+
+// Tentang Routes (Frontend)
+$route['tentang/(:any)'] = 'tentang/index/$1';
+$route['tentang'] = 'tentang';
+
+// Menu System Routes (Frontend)
+$route['page/(:any)'] = 'pages/show/$1';
+$route['category/(:any)'] = 'pages/category/$1';
+$route['search'] = 'pages/search';
+
 // Other Frontend Routes
 $route['tentang'] = 'pages/about';
 $route['kontak'] = 'pages/contact';

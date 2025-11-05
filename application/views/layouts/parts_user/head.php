@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="dns-prefetch" href="https://unpkg.com">
+<link rel="shortcut icon" href="<?php echo base_url(); ?>public/settings/icon/icon.png">
 <!-- Bootstrap 5.3.0 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome 6 -->

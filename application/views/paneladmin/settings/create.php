@@ -179,6 +179,56 @@
                                 </small>
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <label for="icon_file" class="col-sm-3 col-form-label">Icon (File)</label>
+                            <div class="col-sm-9">
+                                <div class="custom-file">
+                                    <input type="file"
+                                        class="custom-file-input <?= form_error('icon_file') ? 'is-invalid' : '' ?>"
+                                        name="icon_file"
+                                        id="icon_file"
+                                        accept="image/*">
+                                    <label class="custom-file-label" for="icon_file">Pilih file icon...</label>
+                                </div>
+                                <div class="invalid-feedback">
+                                    <?= form_error('icon_file') ?>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Format yang diizinkan: JPG, JPEG, PNG, GIF, SVG, ICO. Maksimal ukuran: 1MB. Recommended: 32x32px atau 64x64px
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="icon_class" class="col-sm-3 col-form-label">Icon (FontAwesome)</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i id="icon-preview" class="<?= set_value('icon_class', 'fas fa-university') ?>"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text"
+                                        class="form-control <?= form_error('icon_class') ? 'is-invalid' : '' ?>"
+                                        name="icon_class"
+                                        id="icon_class"
+                                        value="<?= set_value('icon_class', 'fas fa-university') ?>"
+                                        placeholder="Contoh: fas fa-university">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary" id="icon-picker-btn" data-toggle="modal" data-target="#iconPickerModal">
+                                            <i class="fas fa-search"></i> Pilih
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        <?= form_error('icon_class') ?>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Pilih icon FontAwesome untuk favicon browser. Contoh: fas fa-university, fas fa-graduation-cap
+                                </small>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card-footer">
@@ -215,6 +265,8 @@
                             <li><i class="fas fa-check text-success mr-2"></i> <strong>Telepon:</strong> Format dengan kode area</li>
                             <li><i class="fas fa-check text-success mr-2"></i> <strong>Email:</strong> Untuk notifikasi sistem</li>
                             <li><i class="fas fa-check text-success mr-2"></i> <strong>Logo:</strong> Opsional, ukuran max 2MB</li>
+                            <li><i class="fas fa-check text-success mr-2"></i> <strong>Icon File:</strong> Opsional, untuk favicon (max 1MB)</li>
+                            <li><i class="fas fa-check text-success mr-2"></i> <strong>Icon FontAwesome:</strong> Untuk tampilan di browser</li>
                         </ul>
 
                         <hr>
@@ -268,5 +320,121 @@
             value = value.replace(/[^0-9\+\-\(\)\s]/g, '');
             $(this).val(value);
         });
+
+        // Icon file validation
+        $('#icon_file').on('change', function() {
+            var file = this.files[0];
+            if (file) {
+                // Check file size (1MB for icon)
+                if (file.size > 1048576) {
+                    alert('Ukuran file icon terlalu besar! Maksimal 1MB');
+                    $(this).val('');
+                    $(this).siblings('.custom-file-label').html('Pilih file icon...');
+                    return;
+                }
+
+                // Check file type
+                var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/x-icon'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Format file tidak diizinkan! Gunakan JPG, PNG, GIF, SVG, atau ICO');
+                    $(this).val('');
+                    $(this).siblings('.custom-file-label').html('Pilih file icon...');
+                    return;
+                }
+            }
+        });
+
+        // Icon class preview
+        $('#icon_class').on('input', function() {
+            var iconClass = $(this).val() || 'fas fa-university';
+            $('#icon-preview').attr('class', iconClass);
+        });
+
+        // Icon picker functionality
+        $('#iconPickerModal').on('show.bs.modal', function() {
+            loadIconPicker();
+        });
+    });
+
+    // Icon picker data
+    var popularIcons = [
+        'fas fa-university', 'fas fa-graduation-cap', 'fas fa-school', 'fas fa-book',
+        'fas fa-user-graduate', 'fas fa-chalkboard-teacher', 'fas fa-laptop',
+        'fas fa-microscope', 'fas fa-flask', 'fas fa-heartbeat', 'fas fa-stethoscope',
+        'fas fa-user-md', 'fas fa-hospital', 'fas fa-pills', 'fas fa-syringe',
+        'fas fa-dna', 'fas fa-tooth', 'fas fa-eye', 'fas fa-brain',
+        'fas fa-home', 'fas fa-cog', 'fas fa-star', 'fas fa-heart',
+        'fas fa-check', 'fas fa-times', 'fas fa-plus', 'fas fa-minus',
+        'fas fa-search', 'fas fa-envelope', 'fas fa-phone', 'fas fa-map-marker-alt'
+    ];
+
+    function loadIconPicker() {
+        var iconGrid = $('#iconGrid');
+        iconGrid.empty();
+
+        popularIcons.forEach(function(iconClass) {
+            var iconHtml = '<div class="col-2 mb-2">' +
+                '<button type="button" class="btn btn-outline-secondary btn-sm icon-pick-btn w-100" data-icon="' + iconClass + '">' +
+                '<i class="' + iconClass + '"></i>' +
+                '</button>' +
+                '</div>';
+            iconGrid.append(iconHtml);
+        });
+
+        // Handle icon selection
+        $('.icon-pick-btn').on('click', function() {
+            var selectedIcon = $(this).data('icon');
+            $('#icon_class').val(selectedIcon);
+            $('#icon-preview').attr('class', selectedIcon);
+            $('#iconPickerModal').modal('hide');
+        });
+    }
+</script>
+
+<!-- Icon Picker Modal -->
+<div class="modal fade" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="iconPickerModalLabel">
+                    <i class="fas fa-icons mr-2"></i>Pilih Icon
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Pilih icon yang sesuai untuk aplikasi Anda:</p>
+                <div class="row" id="iconGrid">
+                    <!-- Icons will be loaded here -->
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label>Atau masukkan class icon manual:</label>
+                    <input type="text" class="form-control" id="customIconInput" placeholder="Contoh: fas fa-university">
+                    <small class="text-muted">Gunakan icon dari FontAwesome 5. Lihat <a href="https://fontawesome.com/icons" target="_blank">fontawesome.com/icons</a></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>Batal
+                </button>
+                <button type="button" class="btn btn-primary" id="useCustomIcon">
+                    <i class="fas fa-check mr-1"></i>Gunakan Custom Icon
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle custom icon input
+    $('#useCustomIcon').on('click', function() {
+        var customIcon = $('#customIconInput').val();
+        if (customIcon.trim()) {
+            $('#icon_class').val(customIcon);
+            $('#icon-preview').attr('class', customIcon);
+            $('#iconPickerModal').modal('hide');
+        }
     });
 </script>

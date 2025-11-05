@@ -2,8 +2,25 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container">
         <a class="navbar-brand" href="<?= site_url() ?>">
-            <img src="<?php echo base_url(); ?>public/settings/logo/logo.png" alt="Logo" onerror="this.style.display='none'">
-            <!-- <span class="brand-text"><?php echo $title; ?></span> -->
+            <?php
+            // Ambil logo dan nama dari model
+            $CI = &get_instance();
+            $CI->load->model('M_settings');
+            $navbar_data = $CI->M_settings->get_navbar_logo();
+
+            if (!empty($navbar_data)) {
+                if (!empty($navbar_data->logo)) {
+                    // Ada logo, tampilkan logo
+                    echo '<img src="' . base_url('assets/uploads/settings/' . $navbar_data->logo) . '" alt="Logo" style="max-height: 80px;">';
+                } else {
+                    // Tidak ada logo, tampilkan nama website
+                    echo '<span class="brand-text fw-bold">' . (!empty($navbar_data->name) ? htmlspecialchars($navbar_data->name) : 'Website') . '</span>';
+                }
+            } else {
+                // Tidak ada data settings
+                echo '<span class="brand-text fw-bold">Website</span>';
+            }
+            ?>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -15,6 +32,50 @@
                         <i class="fas fa-home me-1"></i>Beranda
                     </a>
                 </li>
+                <?php
+                // Load tentang menu items dynamically
+                if (!isset($tentang_menu) || empty($tentang_menu)) {
+                    $CI = &get_instance();
+                    if (!isset($CI->m_menu_items)) {
+                        $CI->load->model('M_menu_items', 'm_menu_items');
+                    }
+                    $tentang_menu = $CI->m_menu_items->get_by_category_slug('tentang-kami');
+                }
+                ?>
+
+                <?php if (!empty($tentang_menu) && count($tentang_menu) > 1): ?>
+                    <!-- Multiple tentang items - show as dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="tentangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-info-circle me-1"></i>Tentang Kami
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="tentangDropdown">
+                            <?php foreach ($tentang_menu as $item): ?>
+                                <li>
+                                    <a class="dropdown-item" href="<?= site_url('tentang/' . $item->slug) ?>">
+                                        <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-info-circle' ?> me-2"></i>
+                                        <?= htmlspecialchars($item->title) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                <?php elseif (!empty($tentang_menu) && count($tentang_menu) == 1): ?>
+                    <!-- Single tentang item - direct link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('tentang/' . $tentang_menu[0]->slug) ?>">
+                            <i class="<?= !empty($tentang_menu[0]->icon) ? $tentang_menu[0]->icon : 'fas fa-info-circle' ?> me-1"></i>
+                            <?= htmlspecialchars($tentang_menu[0]->title) ?>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <!-- Fallback static link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">
+                            <i class="fas fa-info-circle me-1"></i>Tentang
+                        </a>
+                    </li>
+                <?php endif; ?>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#programs" id="programsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -25,7 +86,9 @@
                         // Fallback: load program studi jika belum dimuat dari controller
                         if (!isset($program_studi_all) || empty($program_studi_all)) {
                             $CI = &get_instance();
-                            $CI->load->model('M_prodi');
+                            if (!isset($CI->m_prodi)) {
+                                $CI->load->model('M_prodi', 'm_prodi');
+                            }
                             $program_studi_all = $CI->m_prodi->get_all_active(10); // Limit 10 untuk navbar
                         }
                         ?>
@@ -64,13 +127,17 @@
                         // Fallback: load facilities jika belum dimuat dari controller
                         if (!isset($facility_categories) || empty($facility_categories)) {
                             $CI = &get_instance();
-                            $CI->load->model('M_facilities');
-                            $facility_categories = $CI->M_facilities->get_categories();
-                            $featured_facilities_nav = $CI->M_facilities->get_featured_facilities(5); // Limit 5 untuk navbar
+                            if (!isset($CI->m_facilities)) {
+                                $CI->load->model('M_facilities', 'm_facilities');
+                            }
+                            $facility_categories = $CI->m_facilities->get_categories();
+                            $featured_facilities_nav = $CI->m_facilities->get_featured_facilities(5); // Limit 5 untuk navbar
                         } else {
                             $CI = &get_instance();
-                            $CI->load->model('M_facilities');
-                            $featured_facilities_nav = $CI->M_facilities->get_featured_facilities(5);
+                            if (!isset($CI->m_facilities)) {
+                                $CI->load->model('M_facilities', 'm_facilities');
+                            }
+                            $featured_facilities_nav = $CI->m_facilities->get_featured_facilities(5);
                         }
                         ?>
 
@@ -124,15 +191,39 @@
                         <li><a class="dropdown-item" href="<?= site_url('facilities') ?>?featured=1"><i class="fas fa-star me-2"></i>Fasilitas Unggulan</a></li>
                     </ul>
                 </li>
+                <?php
+                // Load academic menu items dynamically
+                if (!isset($academic_menu) || empty($academic_menu)) {
+                    $CI = &get_instance();
+                    if (!isset($CI->m_menu_items)) {
+                        $CI->load->model('M_menu_items', 'm_menu_items');
+                    }
+                    // Get academic category items (assuming 'akademik' slug)
+                    $academic_menu = $CI->m_menu_items->get_by_category_slug('akademik');
+                }
+                ?>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="academicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-university me-1"></i>Akademik
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="academicDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt"></i>Kalender Akademik</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-alt"></i>Kurikulum</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-award"></i>Beasiswa</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-clipboard-check"></i>Uji Kompetensi</a></li>
+                        <?php if (!empty($academic_menu)): ?>
+                            <?php foreach ($academic_menu as $item): ?>
+                                <li>
+                                    <a class="dropdown-item" href="<?= site_url('akademik/' . $item->slug) ?>">
+                                        <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-file-alt' ?> me-2"></i>
+                                        <?= htmlspecialchars($item->title) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Fallback static menu if no database items -->
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt me-2"></i>Kalender Akademik</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-alt me-2"></i>Kurikulum</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-award me-2"></i>Beasiswa</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-clipboard-check me-2"></i>Uji Kompetensi</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -140,11 +231,7 @@
                         <i class="fas fa-newspaper me-1"></i>Berita
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">
-                        <i class="fas fa-info-circle me-1"></i>Tentang
-                    </a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo site_url('auth/login'); ?>">
                         <i class="fas fa-sign-in-alt me-1"></i>Login
