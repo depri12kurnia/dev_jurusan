@@ -611,10 +611,18 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="news-card" data-aos="fade-up" data-aos-delay="<?= ($index + 1) * 100 ?>">
                             <div class="news-image" style="background-image: url('<?= !empty($news->thumbnail) ? base_url('public/uploads/news/' . $news->thumbnail) : base_url('assets/img/default-news.jpg') ?>');">
-                                <div class="news-date"><?= date('d M Y', strtotime($news->published_at)) ?></div>
-                                <?php if (!empty($news->category_name)): ?>
-                                    <div class="news-category"><?= $news->category_name ?></div>
-                                <?php endif; ?>
+                                <div class="news-overlay">
+                                    <div class="news-date">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        <?= date('d M Y', strtotime($news->published_at)) ?>
+                                    </div>
+                                    <?php if (!empty($news->category_name)): ?>
+                                        <div class="news-category">
+                                            <i class="fas fa-tag me-1"></i>
+                                            <?= htmlspecialchars($news->category_name) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             <div class="news-content">
                                 <h4 class="news-title"><?= $news->title ?></h4>
@@ -633,8 +641,16 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="news-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
-                            <div class="news-date"><?= date('d M Y') ?></div>
-                            <div class="news-category">Pengumuman</div>
+                            <div class="news-overlay">
+                                <div class="news-date">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    <?= date('d M Y') ?>
+                                </div>
+                                <div class="news-category">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Pengumuman
+                                </div>
+                            </div>
                         </div>
                         <div class="news-content">
                             <h4 class="news-title">Selamat Datang di Portal Berita</h4>
@@ -650,8 +666,16 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="news-card" data-aos="fade-up" data-aos-delay="200">
                         <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
-                            <div class="news-date"><?= date('d M Y') ?></div>
-                            <div class="news-category">Informasi</div>
+                            <div class="news-overlay">
+                                <div class="news-date">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    <?= date('d M Y') ?>
+                                </div>
+                                <div class="news-category">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Informasi
+                                </div>
+                            </div>
                         </div>
                         <div class="news-content">
                             <h4 class="news-title">Pendaftaran Mahasiswa Baru</h4>
@@ -667,8 +691,16 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="news-card" data-aos="fade-up" data-aos-delay="300">
                         <div class="news-image" style="background-image: url('<?= base_url('assets/img/default-news.jpg') ?>');">
-                            <div class="news-date"><?= date('d M Y') ?></div>
-                            <div class="news-category">Kegiatan</div>
+                            <div class="news-overlay">
+                                <div class="news-date">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    <?= date('d M Y') ?>
+                                </div>
+                                <div class="news-category">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Kegiatan
+                                </div>
+                            </div>
                         </div>
                         <div class="news-content">
                             <h4 class="news-title">Kegiatan Praktik Klinik</h4>

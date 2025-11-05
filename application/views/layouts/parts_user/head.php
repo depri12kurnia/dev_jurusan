@@ -1515,18 +1515,65 @@
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--tertiary-color) 100%);
         position: relative;
         overflow: hidden;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .news-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.4) 100%);
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .news-date {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(255, 255, 255, 0.9);
+        align-self: flex-end;
+        background: rgba(255, 255, 255, 0.95);
         color: var(--text-dark);
-        padding: 5px 15px;
+        padding: 6px 12px;
         border-radius: 20px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        white-space: nowrap;
+    }
+
+    .news-category {
+        align-self: flex-start;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        max-width: fit-content;
+        transition: all 0.3s ease;
+    }
+
+    .news-card:hover .news-category {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .news-card:hover .news-date {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .news-card:hover .news-overlay {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%);
     }
 
     .news-content {
@@ -1648,6 +1695,30 @@
         .feature-icon {
             margin-right: 0;
             margin-bottom: 15px;
+        }
+
+        .news-overlay {
+            padding: 12px;
+        }
+
+        .news-category {
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .news-date {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
         }
     }
 

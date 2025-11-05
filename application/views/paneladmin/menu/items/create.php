@@ -374,63 +374,62 @@
     </div>
 </div>
 
-<!-- Include TinyMCE -->
-<script src="https://cdn.tiny.cloud/1/rfomaohh19hujun1nzryt3mq18uefwaxa2u4fbgha42iva90/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+<!-- Include Summernote -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/depri12kurnia/assetsadminlte3.2.0@19d5f7d70f5a32386894c2573713049dc9e2e5f0/plugins/summernote/summernote-bs4.min.css">
+<script src="https://cdn.jsdelivr.net/gh/depri12kurnia/assetsadminlte3.2.0@19d5f7d70f5a32386894c2573713049dc9e2e5f0/plugins/summernote/summernote-bs4.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        // Initialize TinyMCE
-        tinymce.init({
-            selector: '#content',
+        // Initialize Summernote
+        $('#content').summernote({
             height: 400,
-            menubar: 'file edit view insert format tools table help',
-            toolbar: 'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save | insertfile image media link anchor codesample | ltr rtl',
-            plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+            placeholder: 'Tulis konten di sini...',
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            callbacks: {
+                onImageUpload: function(files) {
+                    // Handle image upload if needed
+                    for (let i = 0; i < files.length; i++) {
+                        uploadImage(files[i]);
+                    }
+                }
+            }
+        });
 
-            // Content security
-            extended_valid_elements: 'div[*],span[*],p[*],h1[*],h2[*],h3[*],h4[*],h5[*],h6[*],ul[*],ol[*],li[*],a[*],img[*],table[*],tr[*],td[*],th[*],tbody[*],thead[*],strong,em,u,br',
-            invalid_elements: 'script,iframe[src],object,embed,applet',
+        // Function to handle image upload
+        function uploadImage(file) {
+            var data = new FormData();
+            data.append('file', file);
 
-            // Image and file upload
-            images_upload_url: '<?= base_url("admin/upload/tinymce_image") ?>',
-            file_picker_types: 'image',
-            file_picker_callback: function(cb, value, meta) {
-                var input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
-                input.onchange = function() {
-                    var file = this.files[0];
+            $.ajax({
+                url: '<?= base_url("admin/upload/summernote_image") ?>',
+                method: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        $('#content').summernote('insertImage', response.url);
+                    }
+                },
+                error: function() {
+                    // Insert image as base64 if upload fails
                     var reader = new FileReader();
-                    reader.onload = function() {
-                        var id = 'blobid' + (new Date()).getTime();
-                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
-                        var base64 = reader.result.split(',')[1];
-                        var blobInfo = blobCache.create(id, file, base64);
-                        blobCache.add(blobInfo);
-                        cb(blobInfo.blobUri(), {
-                            title: file.name
-                        });
+                    reader.onload = function(e) {
+                        $('#content').summernote('insertImage', e.target.result);
                     };
                     reader.readAsDataURL(file);
-                };
-                input.click();
-            },
-
-            // Paste settings
-            paste_data_images: true,
-            paste_as_text: false,
-
-            // Content filtering
-            content_css: [
-                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i'
-            ],
-
-            // Additional settings
-            branding: false,
-            promotion: false,
-            resize: true,
-            statusbar: true
-        }); // Icon preview update
+                }
+            });
+        } // Icon preview update
         $('#icon').on('input', function() {
             var iconClass = $(this).val() || 'fas fa-file';
             $('#icon-preview i').removeClass().addClass(iconClass);
@@ -444,8 +443,7 @@
 
         // Form validation
         $('.needs-validation').on('submit', function(e) {
-            // Update TinyMCE content
-            tinymce.triggerSave();
+            // Summernote automatically syncs content to textarea
 
             if (this.checkValidity() === false) {
                 e.preventDefault();
@@ -503,7 +501,7 @@
         setTimeout(function() {
             $('#icon-preview i').removeClass().addClass('fas fa-file');
             $('.needs-validation').removeClass('was-validated');
-            tinymce.get('content').setContent('');
+            $('#content').summernote('code', '');
         }, 10);
     });
 </script>
