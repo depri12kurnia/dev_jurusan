@@ -75,6 +75,23 @@ $route['news/category/(:any)'] = 'news/category/$1';
 $route['news/category/(:any)/(:num)'] = 'news/category/$1/$2';
 $route['news/(:any)'] = 'news/detail/$1';
 
+// Facilities Routes (Frontend)
+$route['facilities'] = 'facilities/index';
+$route['facilities/page/(:num)'] = 'facilities/index/$1';
+$route['facilities/search'] = 'facilities/search';
+$route['facilities/category/(:any)'] = 'facilities/category/$1';
+$route['facilities/category/(:any)/(:num)'] = 'facilities/category/$1/$2';
+$route['facilities/detail/(:any)'] = 'facilities/detail/$1';
+
+// API Routes for Facilities
+$route['api/facilities/latest'] = 'facilities/get_latest_facilities';
+$route['api/facilities/latest/(:num)'] = 'facilities/get_latest_facilities/$1';
+$route['api/facilities/featured'] = 'facilities/get_featured_facilities';
+$route['api/facilities/featured/(:num)'] = 'facilities/get_featured_facilities/$1';
+$route['api/facilities/category/(:num)'] = 'facilities/get_facilities_by_category/$1';
+$route['api/facilities/category/(:num)/(:num)'] = 'facilities/get_facilities_by_category/$1/$2';
+$route['api/facilities/stats'] = 'facilities/get_stats';
+
 // API Routes for News
 $route['api/news/latest'] = 'news/get_latest_news';
 $route['api/news/latest/(:num)'] = 'news/get_latest_news/$1';

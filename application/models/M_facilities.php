@@ -75,6 +75,13 @@ class M_facilities extends CI_Model
         return $this->db->count_all_results();
     }
 
+    public function count_all_active()
+    {
+        $this->db->from($this->table);
+        $this->db->where('status', 'Active');
+        return $this->db->count_all_results();
+    }
+
     // ==========================================
     // CRUD OPERATIONS
     // ==========================================
@@ -129,7 +136,7 @@ class M_facilities extends CI_Model
     // PUBLIC METHODS (FOR FRONTEND)
     // ==========================================
 
-    public function get_featured_facilities($limit = 4)
+    public function get_featured_facilities($limit = 6)
     {
         $this->db->select('f.*, fc.name as category_name, fc.color as category_color');
         $this->db->from($this->table . ' f');
@@ -414,5 +421,104 @@ class M_facilities extends CI_Model
         }
 
         return $slug;
+    }
+
+    // ==========================================
+    // METHODS FOR FRONTEND PAGINATION
+    // ==========================================
+
+    /**
+     * Get all active facilities with pagination support
+     */
+    public function get_all_active_paginated($limit, $offset)
+    {
+        $this->db->select('f.*, fc.name as category_name, fc.color as category_color, fc.icon as category_icon');
+        $this->db->from($this->table . ' f');
+        $this->db->join($this->table_categories . ' fc', 'f.category_id = fc.id', 'left');
+        $this->db->where('f.status', 'Active');
+        $this->db->where('fc.status', 'Active');
+        $this->db->order_by('f.is_featured', 'desc');
+        $this->db->order_by('f.featured_order', 'asc');
+        $this->db->order_by('f.sort_order', 'asc');
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    /**
+     * Get facilities by category with pagination
+     */
+    public function get_by_category_paginated($category_id, $limit, $offset, $sort = 'newest')
+    {
+        $this->db->select('f.*, fc.name as category_name, fc.color as category_color, fc.icon as category_icon');
+        $this->db->from($this->table . ' f');
+        $this->db->join($this->table_categories . ' fc', 'f.category_id = fc.id', 'left');
+        $this->db->where('f.status', 'Active');
+        $this->db->where('fc.status', 'Active');
+        $this->db->where('f.category_id', $category_id);
+
+        // Apply sorting
+        switch ($sort) {
+            case 'oldest':
+                $this->db->order_by('f.created_at', 'asc');
+                break;
+            case 'title_asc':
+                $this->db->order_by('f.title', 'asc');
+                break;
+            case 'title_desc':
+                $this->db->order_by('f.title', 'desc');
+                break;
+            case 'most_viewed':
+                $this->db->order_by('f.view_count', 'desc');
+                break;
+            case 'featured':
+                $this->db->order_by('f.is_featured', 'desc');
+                $this->db->order_by('f.featured_order', 'asc');
+                break;
+            case 'newest':
+            default:
+                $this->db->order_by('f.created_at', 'desc');
+                break;
+        }
+
+        // Secondary sorting
+        $this->db->order_by('f.sort_order', 'asc');
+        $this->db->limit($limit, $offset);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    /**
+     * Count featured facilities by category
+     */
+    public function count_featured_by_category($category_id)
+    {
+        $this->db->where('category_id', $category_id);
+        $this->db->where('is_featured', 'Yes');
+        $this->db->where('status', 'Active');
+        return $this->db->count_all_results($this->table);
+    }
+
+
+
+    /**
+     * Get category by slug
+     */
+    public function get_category_by_slug($slug)
+    {
+        $this->db->where('slug', $slug);
+        $this->db->where('status', 'Active');
+        $query = $this->db->get($this->table_categories);
+        return $query->row();
+    }
+
+    /**
+     * Increment facility views
+     */
+    public function increment_views($facility_id)
+    {
+        $this->db->set('views', 'views + 1', FALSE);
+        $this->db->where('id', $facility_id);
+        return $this->db->update($this->table);
     }
 }

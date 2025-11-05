@@ -38,6 +38,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <?php endif; ?>
 
                 <form action="<?= site_url('admin/prodi/update/' . $prodi->id) ?>" method="post" enctype="multipart/form-data" id="editProdiForm">
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+
                     <div class="row">
                         <!-- Left Column -->
                         <div class="col-lg-8">
@@ -519,6 +522,30 @@ defined('BASEPATH') or exit('No direct script access allowed');
         // Remove validation class on input
         $('.form-control, .form-control').on('input change', function() {
             $(this).removeClass('is-invalid');
+        });
+
+        // CSRF Token handling
+        function getCsrfToken() {
+            // Ambil dari meta tag terlebih dahulu
+            let metaToken = $('meta[name="csrf-token"]').attr('content');
+            if (metaToken) {
+                return metaToken;
+            }
+
+            // Jika tidak ada, ambil dari cookie
+            let token = document.cookie.split('; ')
+                .find(row => row.startsWith('<?= $this->security->get_csrf_cookie_name(); ?>='))
+                ?.split('=')[1] || '';
+            return token;
+        }
+
+        // Update CSRF token before form submission
+        $('#editProdiForm').on('submit', function() {
+            // Update CSRF token dari meta tag atau cookie jika tersedia
+            let currentToken = getCsrfToken();
+            if (currentToken) {
+                $('input[name="<?= $this->security->get_csrf_token_name(); ?>"]').val(currentToken);
+            }
         });
     });
 </script>

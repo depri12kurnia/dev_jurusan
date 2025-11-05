@@ -535,7 +535,7 @@ class M_prodi extends CI_Model
      */
     public function get_featured_programs($limit = 6)
     {
-        return $this->db->select('id, kode_prodi, nama_prodi, jenjang, gelar, slug, deskripsi, featured_description, icon, warna, urutan')
+        return $this->db->select('id, kode_prodi, nama_prodi, jenjang, gelar, slug, deskripsi, featured_description, icon, warna, akreditasi, durasi_studi, is_featured, urutan')
             ->where('status', 'aktif')
             ->where('is_published', 1)
             ->where('is_featured', 1)

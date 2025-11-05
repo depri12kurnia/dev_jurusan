@@ -1,26 +1,34 @@
+<style>
+    .breadcrumb-section {
+        background: var(--bg-light);
+        padding: 20px 0;
+    }
+
+    .breadcrumb {
+        background: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+</style>
+
 <!-- Breadcrumb -->
-<section class="breadcrumb-section py-3" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+<div class="breadcrumb-section">
     <div class="container">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 bg-transparent">
-                <li class="breadcrumb-item">
-                    <a href="<?= site_url() ?>" class="text-decoration-none">
-                        <i class="fas fa-home me-1"></i> Beranda
-                    </a>
-                </li>
-                <?php foreach ($breadcrumb as $name => $url): ?>
-                    <?php if ($url): ?>
-                        <li class="breadcrumb-item">
-                            <a href="<?= $url ?>" class="text-decoration-none"><?= $name ?></a>
-                        </li>
-                    <?php else: ?>
-                        <li class="breadcrumb-item active fw-bold text-primary" aria-current="page"><?= $name ?></li>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="<?= site_url('') ?>">Beranda</a></li>
+                <li class="breadcrumb-item"><a href="<?= site_url('program-studi') ?>">Program Studi</a></li>
+                <li class="breadcrumb-item"><a href="<?= site_url('program-studi/jenjang/' . strtolower($prodi->jenjang)) ?>"><?= $prodi->jenjang ?></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><?= $prodi->nama_prodi ?></li>
             </ol>
         </nav>
     </div>
-</section>
+</div>
 
 <!-- Program Detail Hero -->
 <section class="program-hero py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, <?= $prodi->warna ?> 0%, <?= $prodi->warna ?>cc 50%, <?= $prodi->warna ?>90 100%);">

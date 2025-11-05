@@ -8,7 +8,7 @@ class Prodi extends CI_Controller
     {
         parent::__construct();
         $this->load->model('M_prodi');
-        $this->load->library('form_validation');
+        $this->load->library(['form_validation', 'session']);
         $this->load->helper(['url', 'form', 'text']);
 
         // Cek login dan akses admin
@@ -167,6 +167,9 @@ class Prodi extends CI_Controller
             show_404();
         }
 
+        // Validasi CSRF Token (CodeIgniter 3 sudah otomatis validasi jika POST request)
+        // Token akan divalidasi otomatis oleh sistem jika csrf_protection = TRUE di config
+
         $this->form_validation->set_rules('nama_prodi', 'Nama Program Studi', 'required|trim|max_length[200]');
         $this->form_validation->set_rules('kode_prodi', 'Kode Program Studi', 'required|trim|max_length[20]|callback_check_unique_kode_prodi[' . $id . ']');
         $this->form_validation->set_rules('jenjang', 'Jenjang', 'required|in_list[D3,D4,S1,S2,S3,PROFESI]');
@@ -239,7 +242,7 @@ class Prodi extends CI_Controller
 
         if ($this->M_prodi->update($id, $data)) {
             $this->session->set_flashdata('success', 'Program Studi berhasil diperbarui.');
-            redirect('paneladmin/prodi');
+            redirect('admin/prodi');
         } else {
             $this->session->set_flashdata('error', 'Gagal memperbarui Program Studi.');
             $this->edit($id);

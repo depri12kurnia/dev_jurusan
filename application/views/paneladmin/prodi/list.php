@@ -1,7 +1,27 @@
 <!-- Main content -->
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">
+                    <i class="fas fa-newspaper text-primary mr-2"></i>
+                    Manajemen Study Program
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="<?= base_url('admin/dashboard') ?>">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Study Program</li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Main Card -->
 <section class="content">
     <div class="container-fluid">
-
         <!-- Flash Messages -->
         <?php if ($this->session->flashdata('success')): ?>
             <div class="alert alert-success alert-dismissible">
@@ -18,8 +38,6 @@
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             </div>
         <?php endif; ?>
-
-        <!-- Main Card -->
         <div class="card">
             <div class="card-header">
                 <div class="row align-items-center">
@@ -105,6 +123,9 @@
 
                 <!-- Bulk Actions -->
                 <form id="bulkActionForm" method="post" action="<?= site_url('admin/prodi/bulk_action') ?>">
+                    <!-- CSRF Token -->
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
+
                     <div class="row mb-3" id="bulkActions" style="display: none;">
                         <div class="col-md-8">
                             <div class="input-group input-group-sm">
@@ -313,14 +334,14 @@
         </div>
     </div>
 </section>
-</div>
+
 
 <!-- Detail Modal -->
-<div class="modal fade" id="detailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Detail Program Studi</h4>
+                <h4 class="modal-title" id="detailModalLabel">Detail Program Studi</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -329,442 +350,498 @@
                 <!-- Content will be loaded here -->
             </div>
             <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i> Tutup
+                </button>
             </div>
         </div>
     </div>
+</div>
 
 
-    <!-- Scripts -->
-    <script>
-        $(document).ready(function() {
-            // Initialize DataTable
-            var table = $('#prodiTable').DataTable({
-                "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-                "pageLength": 25,
-                "order": [
-                    [9, 'asc'],
-                    [2, 'asc']
-                ], // Sort by urutan, then nama_prodi
-                "columnDefs": [{
-                        "orderable": false,
-                        "targets": [0, 10]
-                    }, // Disable sorting for checkbox and actions
-                    {
-                        "searchable": false,
-                        "targets": [0, 7, 8, 9, 10]
-                    }
-                ],
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
+<!-- Scripts -->
+<script>
+    // CSRF Token function
+    function getCsrfToken() {
+        // Ambil dari meta tag terlebih dahulu
+        let metaToken = $('meta[name="csrf-token"]').attr('content');
+        if (metaToken) {
+            return metaToken;
+        }
+
+        // Jika tidak ada, ambil dari cookie (nama cookie dari config)
+        let token = document.cookie.split('; ')
+            .find(row => row.startsWith('csrf_cookie_jkt3='))
+            ?.split('=')[1] || '';
+        return token;
+    }
+    $(document).ready(function() {
+        // Initialize DataTable
+        var table = $('#prodiTable').DataTable({
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
+            "pageLength": 25,
+            "order": [
+                [9, 'asc'],
+                [2, 'asc']
+            ], // Sort by urutan, then nama_prodi
+            "columnDefs": [{
+                    "orderable": false,
+                    "targets": [0, 10]
+                }, // Disable sorting for checkbox and actions
+                {
+                    "searchable": false,
+                    "targets": [0, 7, 8, 9, 10]
                 }
-            });
-
-            // Custom search
-            $('#searchBox').on('keyup', function() {
-                table.search(this.value).draw();
-            });
-
-            // Clear search
-            window.clearSearch = function() {
-                $('#searchBox').val('');
-                table.search('').draw();
-            };
-
-            // Filter functions
-            $('#filterJenjang, #filterStatus, #filterAkreditasi').on('change', function() {
-                var jenjang = $('#filterJenjang').val();
-                var status = $('#filterStatus').val();
-                var akreditasi = $('#filterAkreditasi').val();
-
-                $('tbody tr').show();
-
-                if (jenjang) {
-                    $('tbody tr:not([data-jenjang="' + jenjang + '"])').hide();
-                }
-                if (status) {
-                    $('tbody tr:not([data-status="' + status + '"])').hide();
-                }
-                if (akreditasi) {
-                    $('tbody tr:not([data-akreditasi="' + akreditasi + '"])').hide();
-                }
-
-                updateRowNumbers();
-            });
-
-            // Select all functionality
-            $('#selectAll').on('change', function() {
-                $('.select-item:visible').prop('checked', this.checked);
-                updateBulkActions();
-            });
-
-            $(document).on('change', '.select-item', function() {
-                var totalVisible = $('.select-item:visible').length;
-                var checkedVisible = $('.select-item:visible:checked').length;
-
-                $('#selectAll').prop('checked', totalVisible === checkedVisible && totalVisible > 0);
-                updateBulkActions();
-            });
-
-            function updateBulkActions() {
-                var checkedCount = $('.select-item:checked').length;
-                $('#selectedCount').text(checkedCount);
-
-                if (checkedCount > 0) {
-                    $('#bulkActions').show();
-                } else {
-                    $('#bulkActions').hide();
-                }
+            ],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
             }
-
-            function updateRowNumbers() {
-                $('tbody tr:visible').each(function(index) {
-                    $(this).find('td:nth-child(2)').text(index + 1);
-                });
-            }
-
-            // Bulk action form submission
-            $('#bulkActionForm').on('submit', function(e) {
-                var selectedIds = $('.select-item:checked');
-                var action = $('select[name="bulk_action"]').val();
-
-                if (selectedIds.length === 0) {
-                    e.preventDefault();
-                    alert('Pilih minimal satu item untuk diproses.');
-                    return false;
-                }
-
-                if (!action) {
-                    e.preventDefault();
-                    alert('Pilih aksi yang akan dilakukan.');
-                    return false;
-                }
-
-                var confirmMessage = 'Yakin ingin melakukan aksi ini untuk ' + selectedIds.length + ' item?';
-                if (action === 'delete') {
-                    confirmMessage = 'PERHATIAN: Data yang dihapus tidak dapat dikembalikan. Yakin ingin menghapus ' + selectedIds.length + ' item?';
-                }
-
-                return confirm(confirmMessage);
-            });
-
-            // Auto-hide alerts
-            setTimeout(function() {
-                $('.alert').fadeOut('slow');
-            }, 5000);
         });
 
-        // Toggle status function
-        function toggleStatus(id, currentStatus) {
-            var newStatus = currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+        // Custom search
+        $('#searchBox').on('keyup', function() {
+            table.search(this.value).draw();
+        });
 
-            if (confirm('Yakin ingin mengubah status program studi ini menjadi ' + newStatus + '?')) {
-                $.post('<?= site_url("admin/prodi/toggle_status") ?>', {
-                    id: id
-                }, function(response) {
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert('Gagal mengubah status: ' + response.message);
-                    }
-                }, 'json').fail(function() {
-                    alert('Terjadi kesalahan saat mengubah status.');
-                });
+        // Clear search
+        window.clearSearch = function() {
+            $('#searchBox').val('');
+            table.search('').draw();
+        };
+
+        // Filter functions
+        $('#filterJenjang, #filterStatus, #filterAkreditasi').on('change', function() {
+            var jenjang = $('#filterJenjang').val();
+            var status = $('#filterStatus').val();
+            var akreditasi = $('#filterAkreditasi').val();
+
+            $('tbody tr').show();
+
+            if (jenjang) {
+                $('tbody tr:not([data-jenjang="' + jenjang + '"])').hide();
+            }
+            if (status) {
+                $('tbody tr:not([data-status="' + status + '"])').hide();
+            }
+            if (akreditasi) {
+                $('tbody tr:not([data-akreditasi="' + akreditasi + '"])').hide();
+            }
+
+            updateRowNumbers();
+        });
+
+        // Select all functionality
+        $('#selectAll').on('change', function() {
+            $('.select-item:visible').prop('checked', this.checked);
+            updateBulkActions();
+        });
+
+        $(document).on('change', '.select-item', function() {
+            var totalVisible = $('.select-item:visible').length;
+            var checkedVisible = $('.select-item:visible:checked').length;
+
+            $('#selectAll').prop('checked', totalVisible === checkedVisible && totalVisible > 0);
+            updateBulkActions();
+        });
+
+        function updateBulkActions() {
+            var checkedCount = $('.select-item:checked').length;
+            $('#selectedCount').text(checkedCount);
+
+            if (checkedCount > 0) {
+                $('#bulkActions').show();
+            } else {
+                $('#bulkActions').hide();
             }
         }
 
-        // Toggle featured function
-        function toggleFeatured(id, currentFeatured) {
-            var newFeatured = currentFeatured ? 0 : 1;
+        function updateRowNumbers() {
+            $('tbody tr:visible').each(function(index) {
+                $(this).find('td:nth-child(2)').text(index + 1);
+            });
+        }
 
-            $.post('<?= site_url("admin/prodi/toggle_featured") ?>', {
+        // Bulk action form submission
+        $('#bulkActionForm').on('submit', function(e) {
+            var selectedIds = $('.select-item:checked');
+            var action = $('select[name="bulk_action"]').val();
+
+            if (selectedIds.length === 0) {
+                e.preventDefault();
+                alert('Pilih minimal satu item untuk diproses.');
+                return false;
+            }
+
+            if (!action) {
+                e.preventDefault();
+                alert('Pilih aksi yang akan dilakukan.');
+                return false;
+            }
+
+            var confirmMessage = 'Yakin ingin melakukan aksi ini untuk ' + selectedIds.length + ' item?';
+            if (action === 'delete') {
+                confirmMessage = 'PERHATIAN: Data yang dihapus tidak dapat dikembalikan. Yakin ingin menghapus ' + selectedIds.length + ' item?';
+            }
+
+            return confirm(confirmMessage);
+        });
+
+        // Auto-hide alerts
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    });
+
+    // Toggle status function
+    function toggleStatus(id, currentStatus) {
+        var newStatus = currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
+
+        if (confirm('Yakin ingin mengubah status program studi ini menjadi ' + newStatus + '?')) {
+            $.post('<?= site_url("admin/prodi/toggle_status") ?>', {
                 id: id,
-                featured: newFeatured
+                <?= $this->security->get_csrf_token_name(); ?>: getCsrfToken()
             }, function(response) {
                 if (response.success) {
                     location.reload();
                 } else {
-                    alert('Gagal mengubah status featured: ' + response.message);
+                    alert('Gagal mengubah status: ' + response.message);
                 }
             }, 'json').fail(function() {
-                alert('Terjadi kesalahan saat mengubah status featured.');
+                alert('Terjadi kesalahan saat mengubah status.');
             });
         }
+    }
 
-        // View detail function
-        function viewDetail(id) {
-            $.get('<?= site_url("admin/prodi/detail_ajax") ?>/' + id, function(data) {
-                $('#detailContent').html(data);
-                $('#detailModal').modal('show');
-            }).fail(function() {
-                alert('Gagal memuat detail program studi.');
-            });
-        }
+    // Toggle featured function
+    function toggleFeatured(id, currentFeatured) {
+        var newFeatured = currentFeatured ? 0 : 1;
 
-        // Delete function
-        function deleteProdi(id, nama) {
-            if (confirm('Yakin ingin menghapus program studi "' + nama + '"?\n\nData yang dihapus tidak dapat dikembalikan.')) {
-                $.post('<?= site_url("admin/prodi/delete") ?>', {
-                    id: id
-                }, function(response) {
-                    if (response.success) {
-                        location.reload();
-                    } else {
-                        alert('Gagal menghapus program studi: ' + response.message);
-                    }
-                }, 'json').fail(function() {
-                    // Fallback to regular link if AJAX fails
-                    window.location.href = '<?= site_url("admin/prodi/delete") ?>/' + id;
-                });
+        $.post('<?= site_url("admin/prodi/toggle_featured") ?>', {
+            id: id,
+            featured: newFeatured,
+            <?= $this->security->get_csrf_token_name(); ?>: getCsrfToken()
+        }, function(response) {
+            if (response.success) {
+                location.reload();
+            } else {
+                alert('Gagal mengubah status featured: ' + response.message);
             }
+        }, 'json').fail(function() {
+            alert('Terjadi kesalahan saat mengubah status featured.');
+        });
+    }
+
+    // View detail function
+    function viewDetail(id) {
+        console.log('viewDetail called with ID:', id);
+
+        // Check if jQuery and modal are available
+        if (typeof $ === 'undefined') {
+            alert('jQuery tidak tersedia!');
+            return;
         }
 
-        // Export functions
-        function exportData(format) {
-            var url = '<?= site_url("admin/prodi/export") ?>?format=' + format;
-            window.open(url, '_blank');
+        if (!$('#detailModal').length) {
+            alert('Modal element tidak ditemukan!');
+            return;
         }
 
-        // Refresh table
-        function refreshTable() {
-            location.reload();
-        }
-    </script>
+        // Show loading state
+        $('#detailContent').html('<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Memuat data...</div>');
 
-    <!-- Custom CSS AdminLTE 3 Compatible -->
-    <style>
-        /* Main Card Styling */
-        .card {
-            border-radius: 0.5rem;
-            box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+        // Show modal first
+        $('#detailModal').modal('show');
+
+        var url = '<?= site_url("admin/prodi/detail_ajax") ?>/' + id;
+        console.log('AJAX URL:', url);
+
+        $.get(url)
+            .done(function(data) {
+                console.log('AJAX Success, data length:', data.length);
+                $('#detailContent').html(data);
+            })
+            .fail(function(xhr, status, error) {
+                console.error('AJAX Error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error
+                });
+
+                $('#detailContent').html(
+                    '<div class="alert alert-danger">' +
+                    '<i class="fas fa-exclamation-triangle mr-2"></i>' +
+                    'Gagal memuat detail program studi.<br>' +
+                    '<small><strong>Status:</strong> ' + xhr.status + ' ' + xhr.statusText + '<br>' +
+                    '<strong>Error:</strong> ' + (error || 'Unknown') + '</small>' +
+                    '</div>'
+                );
+            });
+    } // Delete function
+    function deleteProdi(id, nama) {
+        if (confirm('Yakin ingin menghapus program studi "' + nama + '"?\n\nData yang dihapus tidak dapat dikembalikan.')) {
+            $.post('<?= site_url("admin/prodi/delete") ?>', {
+                id: id,
+                <?= $this->security->get_csrf_token_name(); ?>: getCsrfToken()
+            }, function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Gagal menghapus program studi: ' + response.message);
+                }
+            }, 'json').fail(function() {
+                // Fallback to regular link if AJAX fails
+                window.location.href = '<?= site_url("admin/prodi/delete") ?>/' + id;
+            });
+        }
+    }
+
+    // Export functions
+    function exportData(format) {
+        var url = '<?= site_url("admin/prodi/export") ?>?format=' + format;
+        window.open(url, '_blank');
+    }
+
+    // Refresh table
+    function refreshTable() {
+        location.reload();
+    }
+</script>
+
+<!-- Custom CSS AdminLTE 3 Compatible -->
+<style>
+    /* Main Card Styling */
+    .card {
+        border-radius: 0.5rem;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+        color: white;
+        border-bottom: 0;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+
+    .card-title {
+        color: white !important;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    /* Table Styling */
+    .table-dark th {
+        background-color: #343a40;
+        border-color: #454d55;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.075);
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    /* Program Icon */
+    .program-icon {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .program-icon:hover {
+        transform: scale(1.05);
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Small Box Widgets */
+    .small-box {
+        border-radius: 0.375rem;
+        position: relative;
+        display: block;
+        margin-bottom: 20px;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .small-box>.inner {
+        padding: 10px;
+    }
+
+    .small-box h3 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        white-space: nowrap;
+        padding: 0;
+    }
+
+    .small-box p {
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .small-box .icon {
+        transition: all 0.3s linear;
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        z-index: 0;
+        font-size: 90px;
+        color: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Button Styling */
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+
+    /* Badge Styling */
+    .badge {
+        font-size: 75%;
+        font-weight: 700;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border: 0;
+        border-radius: 0.375rem;
+    }
+
+    .alert-dismissible .close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        padding: 0.75rem 1.25rem;
+        color: inherit;
+    }
+
+    /* Form Controls */
+    .form-control-sm {
+        height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+
+    /* Input Group */
+    .input-group-sm>.form-control,
+    .input-group-sm>.input-group-prepend>.input-group-text,
+    .input-group-sm>.input-group-append>.input-group-text,
+    .input-group-sm>.input-group-prepend>.btn,
+    .input-group-sm>.input-group-append>.btn {
+        height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
+
+    /* DataTables Integration */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        color: #495057;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.375rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #007bff;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        color: #0056b3;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .btn-group {
+            flex-direction: column;
+            width: 100%;
         }
 
-        .card-header {
-            background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
-            color: white;
-            border-bottom: 0;
-            border-radius: 0.5rem 0.5rem 0 0 !important;
+        .btn-group .btn {
+            width: 100%;
+            margin-bottom: 0.25rem;
         }
 
-        .card-title {
-            color: white !important;
-            font-weight: 600;
-            margin-bottom: 0;
-        }
-
-        /* Table Styling */
-        .table-dark th {
-            background-color: #343a40;
-            border-color: #454d55;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(0, 123, 255, 0.075);
-        }
-
-        .table-bordered {
-            border: 1px solid #dee2e6;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        /* Program Icon */
-        .program-icon {
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .program-icon:hover {
-            transform: scale(1.05);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        /* Small Box Widgets */
-        .small-box {
-            border-radius: 0.375rem;
-            position: relative;
-            display: block;
-            margin-bottom: 20px;
-            box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .small-box>.inner {
-            padding: 10px;
+        .table-responsive {
+            font-size: 0.875rem;
         }
 
         .small-box h3 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin: 0 0 10px 0;
-            white-space: nowrap;
-            padding: 0;
-        }
-
-        .small-box p {
-            font-size: 1rem;
-            margin: 0;
+            font-size: 1.8rem;
         }
 
         .small-box .icon {
-            transition: all 0.3s linear;
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            z-index: 0;
-            font-size: 90px;
-            color: rgba(0, 0, 0, 0.15);
+            font-size: 60px;
         }
 
-        /* Button Styling */
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
+        .card-header .row>.col-md-6:last-child {
+            text-align: center !important;
+            margin-top: 1rem;
         }
+    }
 
-        /* Badge Styling */
-        .badge {
-            font-size: 75%;
-            font-weight: 700;
+    /* Loading Animation */
+    .loading {
+        position: relative;
+    }
+
+    .loading:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+    }
+
+    .loading:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        z-index: 1001;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
         }
-
-        /* Alert Styling */
-        .alert {
-            border: 0;
-            border-radius: 0.375rem;
-        }
-
-        .alert-dismissible .close {
-            position: absolute;
-            top: 0;
-            right: 0;
-            z-index: 2;
-            padding: 0.75rem 1.25rem;
-            color: inherit;
-        }
-
-        /* Form Controls */
-        .form-control-sm {
-            height: calc(1.5em + 0.5rem + 2px);
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
-        }
-
-        /* Input Group */
-        .input-group-sm>.form-control,
-        .input-group-sm>.input-group-prepend>.input-group-text,
-        .input-group-sm>.input-group-append>.input-group-text,
-        .input-group-sm>.input-group-prepend>.btn,
-        .input-group-sm>.input-group-append>.btn {
-            height: calc(1.5em + 0.5rem + 2px);
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
-        }
-
-        /* DataTables Integration */
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
-            color: #495057;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.375rem 0.75rem;
-            margin-left: -1px;
-            line-height: 1.25;
-            color: #007bff;
-            text-decoration: none;
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            color: #0056b3;
-            background-color: #e9ecef;
-            border-color: #dee2e6;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            color: #fff;
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .btn-group {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .btn-group .btn {
-                width: 100%;
-                margin-bottom: 0.25rem;
-            }
-
-            .table-responsive {
-                font-size: 0.875rem;
-            }
-
-            .small-box h3 {
-                font-size: 1.8rem;
-            }
-
-            .small-box .icon {
-                font-size: 60px;
-            }
-
-            .card-header .row>.col-md-6:last-child {
-                text-align: center !important;
-                margin-top: 1rem;
-            }
-        }
-
-        /* Loading Animation */
-        .loading {
-            position: relative;
-        }
-
-        .loading:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 1000;
-        }
-
-        .loading:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
-            border: 2px solid #007bff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            z-index: 1001;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+    }
+</style>

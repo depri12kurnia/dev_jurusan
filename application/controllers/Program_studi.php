@@ -21,9 +21,9 @@ class Program_studi extends CI_Controller
         $prodi_list = $this->m_prodi->get_public_list(8); // Kurangi limit untuk load lebih cepat
         $stats = $this->m_prodi->get_public_statistics();
 
-        // Load data tambahan secara lazy (optional)
-        $prodi_featured = null; // Akan diload via AJAX jika diperlukan
-        $jenjang_list = ['S1', 'S2', 'S3', 'D3', 'D4']; // Static list untuk performa
+        // Load data tambahan
+        $prodi_featured = $this->m_prodi->get_featured_programs(6); // Load program unggulan
+        $jenjang_list = $this->m_prodi->get_jenjang_list(); // Get dari database dengan count
 
         $data = array(
             'title' => 'Program Studi',

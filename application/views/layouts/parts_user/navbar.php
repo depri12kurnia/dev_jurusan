@@ -60,14 +60,68 @@
                         <i class="fas fa-building me-1"></i>Fasilitas
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="facilitiesDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-procedures"></i>Lab Keperawatan</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-heartbeat"></i>Lab Kebidanan</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-hospital-alt"></i>Rumah Sakit Pendidikan</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-microscope"></i>Lab Sains Dasar</a></li>
+                        <?php
+                        // Fallback: load facilities jika belum dimuat dari controller
+                        if (!isset($facility_categories) || empty($facility_categories)) {
+                            $CI = &get_instance();
+                            $CI->load->model('M_facilities');
+                            $facility_categories = $CI->M_facilities->get_categories();
+                            $featured_facilities_nav = $CI->M_facilities->get_featured_facilities(5); // Limit 5 untuk navbar
+                        } else {
+                            $CI = &get_instance();
+                            $CI->load->model('M_facilities');
+                            $featured_facilities_nav = $CI->M_facilities->get_featured_facilities(5);
+                        }
+                        ?>
+
+                        <!-- Featured Facilities -->
+                        <?php if (!empty($featured_facilities_nav)): ?>
+                            <li class="dropdown-header">Fasilitas Unggulan</li>
+                            <?php foreach ($featured_facilities_nav as $facility): ?>
+                                <li>
+                                    <a class="dropdown-item" href="<?= site_url('facilities/detail/' . $facility->slug) ?>">
+                                        <i class="<?= $facility->icon ?: 'fas fa-building' ?> me-2"
+                                            style="color: <?= $facility->category_color ?: '#00B9AD' ?>;"></i>
+                                        <?= htmlspecialchars($facility->title) ?>
+                                        <?php if ($facility->is_featured): ?>
+                                            <span class="badge bg-primary ms-1" style="font-size: 0.6em;">★</span>
+                                        <?php endif; ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
+                        <!-- Categories -->
+                        <?php if (!empty($facility_categories)): ?>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li class="dropdown-header">Kategori Fasilitas</li>
+                            <?php foreach ($facility_categories as $category): ?>
+                                <?php if ($category->facilities_count > 0): ?>
+                                    <li>
+                                        <a class="dropdown-item" href="<?= site_url('facilities/category/' . $category->slug) ?>"
+                                            <i class="<?= $category->icon ?: 'fas fa-building' ?> me-2"
+                                            style="color: <?= $category->color ?: '#6c757d' ?>;"></i>
+                                            <?= htmlspecialchars($category->name) ?>
+                                            <small class="text-muted ms-1">(<?= $category->facilities_count ?>)</small>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Static fallback jika tidak ada data -->
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-procedures me-2" style="color: #007bff;"></i>Lab Keperawatan</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-heartbeat me-2" style="color: #28a745;"></i>Lab Kebidanan</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-hospital-alt me-2" style="color: #dc3545;"></i>Rumah Sakit Pendidikan</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-microscope me-2" style="color: #6f42c1;"></i>Lab Sains Dasar</a></li>
+                        <?php endif; ?>
+
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-book"></i>Perpustakaan</a></li>
+                        <li><a class="dropdown-item" href="<?= site_url('facilities') ?>"><i class="fas fa-list me-2"></i>Semua Fasilitas</a></li>
+                        <li><a class="dropdown-item" href="<?= site_url('facilities') ?>?featured=1"><i class="fas fa-star me-2"></i>Fasilitas Unggulan</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

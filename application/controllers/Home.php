@@ -45,7 +45,7 @@ class Home extends CI_Controller
 		$data['sliders'] = $this->M_sliders->get_active_sliders();
 
 		// Data fasilitas untuk homepage
-		$data['featured_facilities'] = $this->M_facilities->get_featured_facilities(4);
+		$data['featured_facilities'] = $this->M_facilities->get_featured_facilities(6);
 		$data['facility_categories'] = $this->M_facilities->get_categories();
 
 		$data['content'] = 'paneluser/home';

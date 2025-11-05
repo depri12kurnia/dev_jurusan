@@ -288,129 +288,311 @@
                 <?php foreach ($featured_facilities as $index => $facility): ?>
                     <?php
                     $highlights = $this->M_facilities->get_facility_highlights($facility->id);
-                    $col_class = ($index % 2 == 0) ? 'col-lg-6' : 'col-lg-6';
+                    $col_class = count($featured_facilities) <= 2 ? 'col-lg-6' : 'col-lg-6 col-xl-' . (12 / min(count($featured_facilities), 3));
                     $aos_direction = ($index % 2 == 0) ? 'fade-right' : 'fade-left';
+                    $facility_image = !empty($facility->image) ? base_url('public/uploads/facilities/' . $facility->image) : null;
                     ?>
 
                     <div class="<?= $col_class ?>" data-aos="<?= $aos_direction ?>" data-aos-delay="<?= ($index + 1) * 100 ?>">
                         <div class="features-grid mb-4">
-                            <div class="feature-card">
-                                <div class="feature-number"><?= str_pad($facility->featured_order, 2, '0', STR_PAD_LEFT) ?></div>
-                                <div class="feature-header">
-                                    <div class="feature-icon" style="color: <?= $facility->category_color ?>;">
-                                        <i class="<?= $facility->icon ?>"></i>
+                            <div class="feature-card <?= $facility_image ? 'has-image' : '' ?>">
+                                <!-- Facility Image (if available) -->
+                                <?php if ($facility_image): ?>
+                                    <div class="feature-image">
+                                        <img src="<?= $facility_image ?>" alt="<?= htmlspecialchars($facility->title) ?>" loading="lazy">
+                                        <div class="feature-image-overlay">
+                                            <div class="feature-number"><?= str_pad($facility->featured_order, 2, '0', STR_PAD_LEFT) ?></div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <div class="feature-subtitle"><?= htmlspecialchars($facility->subtitle) ?></div>
-                                        <h4 class="feature-title"><?= htmlspecialchars($facility->title) ?></h4>
-                                    </div>
-                                </div>
-                                <p class="feature-description">
-                                    <?= $facility->short_description ?: character_limiter(strip_tags($facility->description), 120) ?>
-                                </p>
-
-                                <?php if (!empty($highlights)): ?>
-                                    <div class="feature-highlights">
-                                        <?php foreach ($highlights as $highlight): ?>
-                                            <span class="feature-highlight" style="border-color: <?= $highlight->color ?>; color: <?= $highlight->color ?>;">
-                                                <?= htmlspecialchars($highlight->title) ?>
-                                            </span>
-                                        <?php endforeach; ?>
-                                    </div>
+                                <?php else: ?>
+                                    <div class="feature-number"><?= str_pad($facility->featured_order, 2, '0', STR_PAD_LEFT) ?></div>
                                 <?php endif; ?>
 
-                                <a href="<?= site_url('facilities/detail/' . $facility->slug) ?>" class="feature-link">
-                                    Jelajahi Fasilitas <i class="fas fa-arrow-right"></i>
-                                </a>
+                                <div class="feature-content">
+                                    <div class="feature-main-content">
+                                        <div class="feature-header">
+                                            <div class="feature-icon" style="color: <?= $facility->category_color ?: '#007bff' ?>;">
+                                                <i class="<?= $facility->icon ?: 'fas fa-building' ?>"></i>
+                                            </div>
+                                            <div>
+                                                <?php if (!empty($facility->subtitle)): ?>
+                                                    <div class="feature-subtitle"><?= htmlspecialchars($facility->subtitle) ?></div>
+                                                <?php endif; ?>
+                                                <h4 class="feature-title"><?= htmlspecialchars($facility->title) ?></h4>
+                                                <?php if (!empty($facility->category_name)): ?>
+                                                    <span class="feature-category" style="color: <?= $facility->category_color ?: '#6c757d' ?>;">
+                                                        <?= htmlspecialchars($facility->category_name) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+
+                                        <p class="feature-description">
+                                            <?= $facility->short_description ?: character_limiter(strip_tags($facility->description), 100) ?>
+                                        </p>
+
+                                        <!-- Facility Stats (if available) -->
+                                        <?php if (!empty($facility->capacity) || !empty($facility->location)): ?>
+                                            <div class="feature-stats">
+                                                <?php if (!empty($facility->capacity)): ?>
+                                                    <div class="feature-stat">
+                                                        <i class="fas fa-users"></i>
+                                                        <span><?= htmlspecialchars($facility->capacity) ?></span>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($facility->location)): ?>
+                                                    <div class="feature-stat">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                        <span><?= htmlspecialchars($facility->location) ?></span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <!-- Facility Highlights -->
+                                        <?php if (!empty($highlights)): ?>
+                                            <div class="feature-highlights">
+                                                <?php
+                                                $max_highlights = 3; // Limit highlights to prevent overcrowding
+                                                $displayed_highlights = array_slice($highlights, 0, $max_highlights);
+                                                ?>
+                                                <?php foreach ($displayed_highlights as $highlight): ?>
+                                                    <span class="feature-highlight"
+                                                        style="border-color: <?= $highlight->color ?: '#28a745' ?>; color: <?= $highlight->color ?: '#28a745' ?>;"
+                                                        title="<?= htmlspecialchars($highlight->description ?: $highlight->title) ?>">
+                                                        <?php if (!empty($highlight->icon)): ?>
+                                                            <i class="<?= $highlight->icon ?>"></i>
+                                                        <?php endif; ?>
+                                                        <?= htmlspecialchars($highlight->title) ?>
+                                                    </span>
+                                                <?php endforeach; ?>
+                                                <?php if (count($highlights) > $max_highlights): ?>
+                                                    <span class="feature-highlight more-highlights" title="<?= count($highlights) - $max_highlights ?> fitur lainnya">
+                                                        +<?= count($highlights) - $max_highlights ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="feature-actions">
+                                        <a href="<?= site_url('facilities/detail/' . $facility->slug) ?>" class="feature-link">
+                                            Jelajahi Fasilitas <i class="fas fa-arrow-right"></i>
+                                        </a>
+
+                                        <!-- Additional actions if available -->
+                                        <?php if (!empty($facility->virtual_tour_url)): ?>
+                                            <a href="<?= $facility->virtual_tour_url ?>" target="_blank" class="feature-link-secondary" title="Tur Virtual">
+                                                <i class="fas fa-vr-cardboard"></i> Tur Virtual
+                                            </a>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($facility->video_url)): ?>
+                                            <a href="<?= $facility->video_url ?>" target="_blank" class="feature-link-secondary" title="Video Demo">
+                                                <i class="fas fa-play-circle"></i> Video
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <!-- Default facilities jika tidak ada data -->
-            <div class="row align-items-center">
-                <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
-                    <div class="features-grid">
-                        <!-- Feature 1: Lab Keperawatan -->
-                        <div class="feature-card">
-                            <div class="feature-number">01</div>
-                            <div class="feature-header">
-                                <div class="feature-icon">
-                                    <i class="fas fa-procedures"></i>
-                                </div>
-                                <div>
-                                    <div class="feature-subtitle">Simulasi Klinis</div>
-                                    <h4 class="feature-title">Laboratorium Keperawatan</h4>
-                                </div>
-                            </div>
-                            <p class="feature-description">
-                                Lab simulasi dengan manikin canggih berteknologi tinggi untuk praktik keterampilan klinis keperawatan yang realistis dan komprehensif.
-                            </p>
-                            <div class="feature-highlights">
-                                <span class="feature-highlight">High-Fidelity Simulator</span>
-                                <span class="feature-highlight">VR Training</span>
-                                <span class="feature-highlight">Real-time Monitoring</span>
-                            </div>
-                            <a href="#" class="feature-link">
-                                Jelajahi Lab <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <!-- Fallback content jika tidak ada data featured facilities -->
+            <?php
+            // Try to get any active facilities as fallback
+            $fallback_facilities = $this->M_facilities->get_all_active(4);
+            ?>
 
-                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
-                    <div class="features-grid">
-                        <!-- Feature 2: Lab Kebidanan -->
-                        <div class="feature-card">
-                            <div class="feature-number">02</div>
-                            <div class="feature-header">
-                                <div class="feature-icon">
-                                    <i class="fas fa-heartbeat"></i>
-                                </div>
-                                <div>
-                                    <div class="feature-subtitle">Maternal Care</div>
-                                    <h4 class="feature-title">Laboratorium Kebidanan</h4>
+            <?php if (!empty($fallback_facilities)): ?>
+                <!-- Show regular facilities if no featured facilities -->
+                <div class="row align-items-stretch">
+                    <div class="col-12 mb-3">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Menampilkan fasilitas unggulan yang tersedia
+                        </div>
+                    </div>
+                    <?php foreach ($fallback_facilities as $index => $facility): ?>
+                        <?php
+                        $highlights = $this->M_facilities->get_facility_highlights($facility->id);
+                        $col_class = 'col-lg-6';
+                        $aos_direction = ($index % 2 == 0) ? 'fade-right' : 'fade-left';
+                        ?>
+                        <div class="<?= $col_class ?>" data-aos="<?= $aos_direction ?>" data-aos-delay="<?= ($index + 1) * 100 ?>">
+                            <div class="features-grid mb-4">
+                                <div class="feature-card">
+                                    <div class="feature-number"><?= str_pad($index + 1, 2, '0', STR_PAD_LEFT) ?></div>
+                                    <div class="feature-content">
+                                        <div class="feature-main-content">
+                                            <div class="feature-header">
+                                                <div class="feature-icon" style="color: <?= $facility->category_color ?: '#007bff' ?>;">
+                                                    <i class="<?= $facility->icon ?: 'fas fa-building' ?>"></i>
+                                                </div>
+                                                <div>
+                                                    <?php if (!empty($facility->subtitle)): ?>
+                                                        <div class="feature-subtitle"><?= htmlspecialchars($facility->subtitle) ?></div>
+                                                    <?php endif; ?>
+                                                    <h4 class="feature-title"><?= htmlspecialchars($facility->title) ?></h4>
+                                                </div>
+                                            </div>
+                                            <p class="feature-description">
+                                                <?= $facility->short_description ?: character_limiter(strip_tags($facility->description), 100) ?>
+                                            </p>
+                                            <?php if (!empty($highlights)): ?>
+                                                <div class="feature-highlights">
+                                                    <?php foreach (array_slice($highlights, 0, 3) as $highlight): ?>
+                                                        <span class="feature-highlight" style="border-color: <?= $highlight->color ?: '#28a745' ?>; color: <?= $highlight->color ?: '#28a745' ?>;">
+                                                            <?= htmlspecialchars($highlight->title) ?>
+                                                        </span>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="feature-actions">
+                                            <a href="<?= site_url('facilities/detail/' . $facility->slug) ?>" class="feature-link">
+                                                Jelajahi Fasilitas <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="feature-description">
-                                Fasilitas praktik lengkap untuk simulasi persalinan, perawatan ibu hamil, dan neonatal dengan teknologi terdepan.
-                            </p>
-                            <div class="feature-highlights">
-                                <span class="feature-highlight">Birth Simulator</span>
-                                <span class="feature-highlight">Neonatal Care</span>
-                                <span class="feature-highlight">Emergency Training</span>
+                        </div>
+                        <?php if (($index + 1) % 2 == 0 && $index + 1 < count($fallback_facilities)): ?>
+                            <div class="w-100 d-none d-lg-block"></div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <!-- Static fallback jika tidak ada data sama sekali -->
+                <div class="row align-items-center">
+                    <div class="col-12 mb-4">
+                        <div class="alert alert-warning text-center">
+                            <i class="fas fa-tools me-2"></i>
+                            Data fasilitas sedang dalam proses pembaruan. Berikut adalah fasilitas utama yang tersedia:
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="feature-number">01</div>
+                                <div class="feature-content">
+                                    <div class="feature-main-content">
+                                        <div class="feature-header">
+                                            <div class="feature-icon" style="color: #007bff;">
+                                                <i class="fas fa-procedures"></i>
+                                            </div>
+                                            <div>
+                                                <div class="feature-subtitle">Simulasi Klinis</div>
+                                                <h4 class="feature-title">Laboratorium Keperawatan</h4>
+                                            </div>
+                                        </div>
+                                        <p class="feature-description">
+                                            Lab simulasi dengan manikin canggih berteknologi tinggi untuk praktik keterampilan klinis keperawatan yang realistis dan komprehensif.
+                                        </p>
+                                        <div class="feature-highlights">
+                                            <span class="feature-highlight">High-Fidelity Simulator</span>
+                                            <span class="feature-highlight">VR Training</span>
+                                            <span class="feature-highlight">Real-time Monitoring</span>
+                                        </div>
+                                    </div>
+                                    <div class="feature-actions">
+                                        <a href="<?= site_url('facilities') ?>" class="feature-link">
+                                            Jelajahi Lab <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <a href="#" class="feature-link">
-                                Lihat Fasilitas <i class="fas fa-arrow-right"></i>
-                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="feature-number">02</div>
+                                <div class="feature-content">
+                                    <div class="feature-main-content">
+                                        <div class="feature-header">
+                                            <div class="feature-icon" style="color: #28a745;">
+                                                <i class="fas fa-heartbeat"></i>
+                                            </div>
+                                            <div>
+                                                <div class="feature-subtitle">Maternal Care</div>
+                                                <h4 class="feature-title">Laboratorium Kebidanan</h4>
+                                            </div>
+                                        </div>
+                                        <p class="feature-description">
+                                            Fasilitas praktik lengkap untuk simulasi persalinan, perawatan ibu hamil, dan neonatal dengan teknologi terdepan.
+                                        </p>
+                                        <div class="feature-highlights">
+                                            <span class="feature-highlight">Birth Simulator</span>
+                                            <span class="feature-highlight">Neonatal Care</span>
+                                            <span class="feature-highlight">Emergency Training</span>
+                                        </div>
+                                    </div>
+                                    <div class="feature-actions">
+                                        <a href="<?= site_url('facilities') ?>" class="feature-link">
+                                            Lihat Fasilitas <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Illustration Section -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="feature-illustration" data-aos="fade-up" data-aos-delay="300">
-                    <i class="fas fa-clinic-medical"></i>
-                    <div class="feature-stats">
-                        <div class="feature-stats-number">95%</div>
-                        <div class="feature-stats-label">Kepuasan Mahasiswa</div>
+        <!-- View All Facilities Button & Statistics -->
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+            <?php
+            $total_facilities = isset($facility_categories) ? array_sum(array_column($facility_categories, 'facilities_count')) : 0;
+            if ($total_facilities == 0) {
+                $total_facilities = $this->M_facilities->count_all_active();
+            }
+            ?> <?php if ($total_facilities > 0): ?>
+                <div class="facilities-summary mb-4">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <p class="facilities-count">
+                                <span class="count-number"><?= $total_facilities ?></span>
+                                fasilitas berkualitas tinggi siap mendukung pembelajaran Anda
+                            </p>
+                            <?php if (isset($facility_categories) && !empty($facility_categories)): ?>
+                                <div class="facilities-categories">
+                                    <?php foreach (array_slice($facility_categories, 0, 4) as $category): ?>
+                                        <span class="category-badge" style="color: <?= $category->color ?: '#6c757d' ?>;">
+                                            <i class="<?= $category->icon ?: 'fas fa-building' ?>"></i>
+                                            <?= htmlspecialchars($category->name) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                    <?php if (count($facility_categories) > 4): ?>
+                                        <span class="category-badge more">
+                                            +<?= count($facility_categories) - 4 ?> kategori lainnya
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
+            <?php endif; ?>
+
+            <div class="facilities-actions">
+                <a href="<?= site_url('facilities') ?>" class="btn btn-outline-primary btn-lg me-3">
+                    <i class="fas fa-building me-2"></i>Jelajahi Semua Fasilitas
+                </a>
+
+                <?php if (isset($featured_facilities) && !empty($featured_facilities)): ?>
+                    <a href="<?= site_url('facilities?filter=featured') ?>" class="btn btn-outline-primary btn-lg me-3">
+                        <i class="fas fa-star me-2"></i>Fasilitas Unggulan
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
-
-        <!-- View All Facilities Button -->
-        <?php if (!empty($featured_facilities) && count($featured_facilities) >= 3): ?>
-            <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
-                <a href="<?= site_url('facilities') ?>" class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-building me-2"></i>Lihat Semua Fasilitas
-                </a>
-            </div>
-        <?php endif; ?>
     </div>
 </section>
 
