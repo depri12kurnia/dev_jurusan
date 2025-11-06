@@ -1,8 +1,8 @@
 <style>
     .hero-section {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        background: linear-gradient(135deg, var(--primary-color, #00B9AD), var(--secondary-color, #60C0D0));
         color: white;
-        padding: 80px 0 60px;
+        padding: 50px 0;
         position: relative;
         overflow: hidden;
     }
@@ -14,7 +14,8 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,20 50,40 100,20 150,40 200,20 250,40 300,20 350,40 400,20 450,40 500,20 550,40 600,20 650,40 700,20 750,40 800,20 850,40 900,20 950,40 1000,20 1000,100 0,100"/></svg>') repeat-x bottom;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 1;
     }
 
     .breadcrumb-section {
@@ -320,7 +321,7 @@
 
     @media (max-width: 768px) {
         .hero-section {
-            padding: 60px 0 40px;
+            padding: 40px 0 30px;
         }
 
         .category-title {
@@ -345,10 +346,10 @@
                 <div class="category-icon" data-aos="zoom-in">
                     <i class="fas fa-tags"></i>
                 </div>
-                <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">
+                <h1 class="display-5 fw-bold mb-2" data-aos="fade-up">
                     Berita <?= $category->name ?>
                 </h1>
-                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                <p class="lead mb-3" data-aos="fade-up" data-aos-delay="100">
                     <?= $meta_description ?>
                 </p>
                 <div class="d-flex justify-content-center gap-4" data-aos="fade-up" data-aos-delay="200">

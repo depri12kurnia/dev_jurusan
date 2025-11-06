@@ -58,11 +58,6 @@
                     <small class="text-muted d-block"><strong>Meta Description:</strong></small>
                     <p class="mb-2"><?= $item->meta_description ?></p>
                 <?php endif; ?>
-
-                <?php if ($item->meta_keywords): ?>
-                    <small class="text-muted d-block"><strong>Meta Keywords:</strong></small>
-                    <p class="mb-0"><?= $item->meta_keywords ?></p>
-                <?php endif; ?>
             </div>
         </div>
     </div>

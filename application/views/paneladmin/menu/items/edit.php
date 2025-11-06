@@ -23,7 +23,7 @@
 <!-- Main Card -->
 <section class="content">
     <div class="container-fluid">
-        <?= form_open('admin/menu_items/edit/' . $item->id, 'class="needs-validation" novalidate') ?>
+        <?= form_open('admin/menu_items/update/' . $item->id, 'class="needs-validation" novalidate') ?>
         <div class="row">
             <div class="col-lg-8 col-12">
                 <div class="card">
@@ -54,6 +54,14 @@
                             </div>
                         <?php endif; ?>
 
+                        <?php if (validation_errors()): ?>
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <h5><i class="fas fa-exclamation-triangle"></i> Validasi Error!</h5>
+                                <?= validation_errors() ?>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <!-- Title Field -->
@@ -68,6 +76,8 @@
                                         name="title"
                                         value="<?= set_value('title', $item->title) ?>"
                                         placeholder="Masukkan judul item menu"
+                                        minlength="3"
+                                        maxlength="200"
                                         required>
                                     <?php if (form_error('title')): ?>
                                         <div class="invalid-feedback">
@@ -143,7 +153,9 @@
                                             id="icon"
                                             name="icon"
                                             value="<?= set_value('icon', $item->icon) ?>"
-                                            placeholder="fas fa-file">
+                                            placeholder="fas fa-file"
+                                            pattern="^fa[srb]? fa-[a-z-]+$"
+                                            title="Format: fas fa-nama-icon">
                                         <div class="input-group-append">
                                             <button type="button" class="btn btn-outline-secondary" id="icon-picker-btn">
                                                 <i class="fas fa-search mr-1"></i> Pilih
@@ -173,6 +185,8 @@
                                         name="order_position"
                                         value="<?= set_value('order_position', $item->order_position) ?>"
                                         min="1"
+                                        max="999"
+                                        step="1"
                                         required>
                                     <?php if (form_error('order_position')): ?>
                                         <div class="invalid-feedback">
@@ -540,6 +554,85 @@
             $('#icon-preview i').removeClass().addClass(selectedIcon);
             $('#iconPickerModal').modal('hide');
         });
+    }
+
+    // Form validation handler for edit
+    $('.needs-validation').on('submit', function(e) {
+        var isValid = true;
+        var form = this;
+
+        // Clear previous validation states
+        $(form).find('.is-invalid').removeClass('is-invalid');
+        $(form).find('.custom-invalid-feedback').remove();
+
+        // Title validation
+        var title = $('#title').val().trim();
+        if (title === '') {
+            showFieldError('#title', 'Judul item menu wajib diisi');
+            isValid = false;
+        } else if (title.length < 3) {
+            showFieldError('#title', 'Judul minimal 3 karakter');
+            isValid = false;
+        }
+
+        // Category validation
+        var categoryId = $('#category_id').val();
+        if (categoryId === '' || categoryId === '0') {
+            showFieldError('#category_id', 'Kategori menu wajib dipilih');
+            isValid = false;
+        }
+
+        // Order position validation
+        var orderPosition = $('#order_position').val();
+        if (orderPosition === '' || orderPosition < 1) {
+            showFieldError('#order_position', 'Urutan tampil minimal 1');
+            isValid = false;
+        }
+
+        // Content validation
+        var content = $('#content').summernote('code').trim();
+        var textContent = $('<div>').html(content).text().trim();
+        if (content === '' || textContent === '') {
+            showFieldError('#content', 'Konten wajib diisi');
+            isValid = false;
+        }
+
+        // Show warnings but allow submission for server validation
+        if (!isValid) {
+            showValidationSummary();
+            var firstError = $('.is-invalid').first();
+            if (firstError.length) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+            }
+        }
+
+        $(form).addClass('was-validated');
+        return true; // Allow submission
+    });
+
+    // Helper functions
+    function showFieldError(fieldSelector, message) {
+        var field = $(fieldSelector);
+        field.addClass('is-invalid');
+
+        var feedback = $('<div class="custom-invalid-feedback text-danger small mt-1"></div>').text(message);
+        field.closest('.form-group').append(feedback);
+    }
+
+    function showValidationSummary() {
+        var errorCount = $('.is-invalid').length;
+        $('.validation-summary').remove();
+
+        var alertHtml = `
+            <div class="alert alert-warning alert-dismissible validation-summary">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h5><i class="fas fa-exclamation-triangle"></i> Peringatan!</h5>
+                <p>Ditemukan ${errorCount} masalah yang perlu diperhatikan.</p>
+            </div>
+        `;
+        $('.card-body').first().prepend(alertHtml);
     }
 </script>
 

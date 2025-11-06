@@ -51,6 +51,14 @@
                             </div>
                         <?php endif; ?>
 
+                        <?php if (validation_errors()): ?>
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <h5><i class="fas fa-exclamation-triangle"></i> Validasi Error!</h5>
+                                <?= validation_errors() ?>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <!-- Title Field -->
@@ -65,6 +73,8 @@
                                         name="title"
                                         value="<?= set_value('title') ?>"
                                         placeholder="Masukkan judul item menu"
+                                        minlength="3"
+                                        maxlength="100"
                                         required>
                                     <?php if (form_error('title')): ?>
                                         <div class="invalid-feedback">
@@ -123,7 +133,10 @@
                                             id="icon"
                                             name="icon"
                                             value="<?= set_value('icon', 'fas fa-file') ?>"
-                                            placeholder="fas fa-file">
+                                            placeholder="fas fa-file"
+                                            pattern="^fa[srb]? fa-[a-z-]+$"
+                                            title="Format: fas fa-nama-icon"
+                                            required>
                                         <div class="input-group-append">
                                             <button type="button" class="btn btn-outline-secondary" id="icon-picker-btn">
                                                 <i class="fas fa-search mr-1"></i> Pilih
@@ -153,6 +166,8 @@
                                         name="order_position"
                                         value="<?= set_value('order_position', '1') ?>"
                                         min="1"
+                                        max="999"
+                                        step="1"
                                         required>
                                     <?php if (form_error('order_position')): ?>
                                         <div class="invalid-feedback">
@@ -248,7 +263,8 @@
                                 id="meta_title"
                                 name="meta_title"
                                 value="<?= set_value('meta_title') ?>"
-                                placeholder="Otomatis dari judul jika kosong">
+                                placeholder="Otomatis dari judul jika kosong"
+                                maxlength="60">
                             <?php if (form_error('meta_title')): ?>
                                 <div class="invalid-feedback">
                                     <?= form_error('meta_title') ?>
@@ -269,7 +285,8 @@
                                 id="meta_description"
                                 name="meta_description"
                                 rows="3"
-                                placeholder="Deskripsi singkat untuk SEO"><?= set_value('meta_description') ?></textarea>
+                                placeholder="Deskripsi singkat untuk SEO"
+                                maxlength="160"><?= set_value('meta_description') ?></textarea>
                             <?php if (form_error('meta_description')): ?>
                                 <div class="invalid-feedback">
                                     <?= form_error('meta_description') ?>
@@ -496,13 +513,198 @@
         });
     }
 
+    // Form validation handler
+    $('.needs-validation').on('submit', function(e) {
+        var isValid = true;
+        var form = this;
+
+        // Clear previous validation states
+        $(form).find('.is-invalid').removeClass('is-invalid');
+        $(form).find('.invalid-feedback').remove();
+
+        // Title validation
+        var title = $('#title').val().trim();
+        if (title === '') {
+            showFieldError('#title', 'Judul item menu wajib diisi');
+            isValid = false;
+        } else if (title.length < 3) {
+            showFieldError('#title', 'Judul minimal 3 karakter');
+            isValid = false;
+        } else if (title.length > 100) {
+            showFieldError('#title', 'Judul maksimal 100 karakter');
+            isValid = false;
+        }
+
+        // Category validation
+        var categoryId = $('#category_id').val();
+        if (categoryId === '' || categoryId === '0') {
+            showFieldError('#category_id', 'Kategori menu wajib dipilih');
+            isValid = false;
+        }
+
+        // Icon validation
+        var icon = $('#icon').val().trim();
+        if (icon === '') {
+            showFieldError('#icon', 'Icon wajib dipilih');
+            isValid = false;
+        } else if (!icon.match(/^fa[srb]? fa-[a-z-]+$/)) {
+            showFieldError('#icon', 'Format icon tidak valid (gunakan format: fas fa-nama-icon)');
+            isValid = false;
+        }
+
+        // Order position validation
+        var orderPosition = $('#order_position').val();
+        if (orderPosition === '' || orderPosition < 1) {
+            showFieldError('#order_position', 'Urutan tampil minimal 1');
+            isValid = false;
+        } else if (orderPosition > 999) {
+            showFieldError('#order_position', 'Urutan tampil maksimal 999');
+            isValid = false;
+        }
+
+        // Content validation (Summernote)
+        var content = $('#content').summernote('code').trim();
+        var textContent = $('<div>').html(content).text().trim();
+        if (content === '' || content === '<p><br></p>' || textContent === '') {
+            showFieldError('#content', 'Konten item menu wajib diisi');
+            isValid = false;
+        } else if (textContent.length < 10) {
+            showFieldError('#content', 'Konten minimal 10 karakter');
+            isValid = false;
+        }
+
+        // Meta title validation (optional but with limits)
+        var metaTitle = $('#meta_title').val().trim();
+        if (metaTitle !== '' && metaTitle.length > 60) {
+            showFieldError('#meta_title', 'Meta title maksimal 60 karakter');
+            isValid = false;
+        }
+
+        // Meta description validation (optional but with limits)
+        var metaDescription = $('#meta_description').val().trim();
+        if (metaDescription !== '' && metaDescription.length > 160) {
+            showFieldError('#meta_description', 'Meta description maksimal 160 karakter');
+            isValid = false;
+        }
+
+        // For development - allow form submission even with client-side errors
+        if (!isValid) {
+            // Show summary alert but allow submission
+            showValidationSummary();
+
+            // Add warning but don't prevent submission
+            console.warn('Client-side validation failed, but allowing server-side validation');
+
+            // Scroll to first error
+            var firstError = $('.is-invalid').first();
+            if (firstError.length) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+            }
+        }
+        $(form).addClass('was-validated');
+        return isValid;
+    });
+
+    // Helper function to show field errors
+    function showFieldError(fieldSelector, message) {
+        var field = $(fieldSelector);
+        field.addClass('is-invalid');
+
+        var feedback = $('<div class="invalid-feedback"></div>').text(message);
+
+        // For select fields or input groups, place feedback after the parent div
+        if (field.hasClass('form-control') && field.parent().hasClass('input-group')) {
+            field.parent().after(feedback);
+        } else {
+            field.after(feedback);
+        }
+    }
+
+    // Show validation summary
+    function showValidationSummary() {
+        var errorCount = $('.is-invalid').length;
+
+        // Remove existing alert
+        $('.validation-summary').remove();
+
+        var alertHtml = `
+            <div class="alert alert-danger alert-dismissible validation-summary">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h5><i class="fas fa-exclamation-triangle"></i> Validasi Gagal!</h5>
+                <p>Ditemukan <strong>${errorCount}</strong> kesalahan pada form. Mohon periksa dan perbaiki field yang ditandai merah.</p>
+            </div>
+        `;
+
+        $('.card-body').first().prepend(alertHtml);
+    }
+
+    // Real-time character counter for meta fields
+    $('#meta_title').on('input', function() {
+        var length = $(this).val().length;
+        var counter = $(this).next('.char-counter');
+        if (counter.length === 0) {
+            counter = $('<small class="form-text text-muted char-counter"></small>');
+            $(this).after(counter);
+        }
+
+        var color = length > 60 ? 'text-danger' : (length > 50 ? 'text-warning' : 'text-muted');
+        counter.removeClass('text-muted text-warning text-danger').addClass(color);
+        counter.text(`${length}/60 karakter`);
+    });
+
+    $('#meta_description').on('input', function() {
+        var length = $(this).val().length;
+        var counter = $(this).next('.char-counter');
+        if (counter.length === 0) {
+            counter = $('<small class="form-text text-muted char-counter"></small>');
+            $(this).after(counter);
+        }
+
+        var color = length > 160 ? 'text-danger' : (length > 140 ? 'text-warning' : 'text-muted');
+        counter.removeClass('text-muted text-warning text-danger').addClass(color);
+        counter.text(`${length}/160 karakter`);
+    });
+
+    // Title character counter
+    $('#title').on('input', function() {
+        var length = $(this).val().length;
+        var counter = $(this).siblings('.char-counter');
+        if (counter.length === 0) {
+            counter = $('<small class="form-text text-muted char-counter"></small>');
+            $(this).after(counter);
+        }
+
+        var color = length > 100 ? 'text-danger' : (length > 80 ? 'text-warning' : 'text-muted');
+        counter.removeClass('text-muted text-warning text-danger').addClass(color);
+        counter.text(`${length}/100 karakter`);
+    });
+
+    // Auto-generate meta title from title if empty
+    $('#title').on('blur', function() {
+        var title = $(this).val().trim();
+        var metaTitle = $('#meta_title').val().trim();
+
+        if (title !== '' && metaTitle === '') {
+            var autoMetaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+            $('#meta_title').val(autoMetaTitle).trigger('input');
+        }
+    });
+
     // Reset form handler
     $('button[type="reset"]').click(function() {
-        setTimeout(function() {
-            $('#icon-preview i').removeClass().addClass('fas fa-file');
-            $('.needs-validation').removeClass('was-validated');
-            $('#content').summernote('code', '');
-        }, 10);
+        if (confirm('Apakah Anda yakin ingin mereset semua data yang sudah diisi?')) {
+            setTimeout(function() {
+                $('#icon-preview i').removeClass().addClass('fas fa-file');
+                $('.needs-validation').removeClass('was-validated');
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback, .validation-summary, .char-counter').remove();
+                $('#content').summernote('code', '');
+            }, 10);
+        } else {
+            return false;
+        }
     });
 </script>
 
@@ -534,5 +736,59 @@
 
     .cke_top {
         border-top: 1px solid #d2d6de !important;
+    }
+
+    .char-counter {
+        float: right;
+        font-weight: 500;
+    }
+
+    .char-counter.text-warning {
+        color: #ffc107 !important;
+    }
+
+    .char-counter.text-danger {
+        color: #dc3545 !important;
+    }
+
+    .validation-summary {
+        border-left: 4px solid #dc3545;
+    }
+
+    .is-invalid {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    .form-group .invalid-feedback {
+        display: block;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .btn[type="submit"]:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .required-indicator {
+        color: #dc3545;
+        font-weight: bold;
+        margin-left: 2px;
     }
 </style>

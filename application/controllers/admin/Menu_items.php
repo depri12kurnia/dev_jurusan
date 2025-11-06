@@ -100,48 +100,20 @@ class Menu_items extends CI_Controller
             return;
         }
 
-        // Return HTML content for the modal
-        echo '
-        <div class="row">
-            <div class="col-md-6">
-                <table class="table table-bordered">
-                    <tr>
-                        <th width="30%">ID</th>
-                        <td>' . $item->id . '</td>
-                    </tr>
-                    <tr>
-                        <th>Judul</th>
-                        <td><i class="' . ($item->icon ?: 'fas fa-file') . ' mr-2"></i>' . $item->title . '</td>
-                    </tr>
-                    <tr>
-                        <th>Kategori</th>
-                        <td><span class="badge badge-info">' . ($item->category_name ?: 'No Category') . '</span></td>
-                    </tr>
-                    <tr>
-                        <th>Slug</th>
-                        <td><code>' . $item->slug . '</code></td>
-                    </tr>
-                    <tr>
-                        <th>Urutan</th>
-                        <td>' . $item->order_position . '</td>
-                    </tr>
-                    <tr>
-                        <th>Status</th>
-                        <td>' . ($item->is_active ? '<span class="badge badge-success">Aktif</span>' : '<span class="badge badge-secondary">Nonaktif</span>') . '</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h6>Konten:</h6>
-                <div class="border p-3" style="max-height: 300px; overflow-y: auto;">
-                    ' . ($item->content ? nl2br(htmlspecialchars($item->content)) : '<em>Tidak ada konten</em>') . '
-                </div>
-            </div>
-        </div>';
+        // Load the detail view
+        $data['item'] = $item;
+        $this->load->view('paneladmin/menu/items/detail', $data);
     }
 
     public function create()
     {
+        // Handle form submission
+        if ($this->input->method() === 'post') {
+            $this->_process_form();
+            return;
+        }
+
+        // Show form
         $data['website'] = $this->M_settings->get_main_settings();
         $data['categories'] = $this->M_menu_categories->get_all();
         $data['title'] = 'Tambah Menu Item | Admin Panel';
@@ -149,39 +121,120 @@ class Menu_items extends CI_Controller
         $this->load->view('layouts/adminlte3', $data);
     }
 
-    public function store()
+    private function _process_form()
     {
-        $this->form_validation->set_rules('category_id', 'Category', 'required|integer');
-        $this->form_validation->set_rules('title', 'Title', 'required|trim|max_length[200]');
-        $this->form_validation->set_rules('slug', 'Slug', 'required|trim|max_length[200]|callback_check_slug');
-        $this->form_validation->set_rules('content', 'Content', 'trim');
-        $this->form_validation->set_rules('icon', 'Icon', 'trim|max_length[50]');
+        // Basic validation
+        $this->form_validation->set_rules('category_id', 'Kategori', 'required');
+        $this->form_validation->set_rules('title', 'Judul', 'required|trim');
+        $this->form_validation->set_rules('content', 'Konten', 'required');
         $this->form_validation->set_rules('order_position', 'Urutan', 'required|integer');
-        $this->form_validation->set_rules('is_active', 'Status', 'required|in_list[0,1]');
-        $this->form_validation->set_rules('meta_title', 'Meta Title', 'trim|max_length[255]');
-        $this->form_validation->set_rules('meta_description', 'Meta Description', 'trim');
 
         if ($this->form_validation->run() === FALSE) {
-            $this->create();
             return;
         }
+
+        // Generate slug
+        $slug = url_title($this->input->post('title'), 'dash', TRUE);
 
         $data = [
             'category_id' => $this->input->post('category_id'),
             'title' => $this->input->post('title'),
-            'slug' => $this->input->post('slug'),
+            'slug' => $slug,
             'content' => $this->input->post('content'),
-            'icon' => $this->input->post('icon'),
+            'icon' => $this->input->post('icon') ?: 'fas fa-file',
             'order_position' => $this->input->post('order_position'),
-            'is_active' => $this->input->post('is_active'),
+            'is_active' => $this->input->post('is_active') ? 1 : 0,
             'meta_title' => $this->input->post('meta_title'),
             'meta_description' => $this->input->post('meta_description')
         ];
 
         if ($this->M_menu_items->insert($data)) {
             $this->session->set_flashdata('success', 'Menu item berhasil ditambahkan!');
+            redirect('admin/menu_items');
         } else {
-            $this->session->set_flashdata('error', 'Gagal menambahkan menu item!');
+            $this->session->set_flashdata('error', 'Gagal menyimpan data!');
+        }
+    }
+
+    public function store()
+    {
+        try {
+            // Set validation rules
+            $this->form_validation->set_rules('category_id', 'Kategori', 'required|integer', [
+                'required' => 'Kategori wajib dipilih',
+                'integer' => 'Kategori harus berupa angka'
+            ]);
+            $this->form_validation->set_rules('title', 'Judul', 'required|trim|min_length[3]|max_length[200]', [
+                'required' => 'Judul wajib diisi',
+                'min_length' => 'Judul minimal 3 karakter',
+                'max_length' => 'Judul maksimal 200 karakter'
+            ]);
+            $this->form_validation->set_rules('content', 'Konten', 'required|trim', [
+                'required' => 'Konten wajib diisi'
+            ]);
+            $this->form_validation->set_rules('icon', 'Icon', 'trim|max_length[50]', [
+                'max_length' => 'Icon maksimal 50 karakter'
+            ]);
+            $this->form_validation->set_rules('order_position', 'Urutan', 'required|integer|greater_than[0]', [
+                'required' => 'Urutan tampil wajib diisi',
+                'integer' => 'Urutan harus berupa angka',
+                'greater_than' => 'Urutan minimal 1'
+            ]);
+            $this->form_validation->set_rules('meta_title', 'Meta Title', 'trim|max_length[255]', [
+                'max_length' => 'Meta title maksimal 255 karakter'
+            ]);
+            $this->form_validation->set_rules('meta_description', 'Meta Description', 'trim|max_length[500]', [
+                'max_length' => 'Meta description maksimal 500 karakter'
+            ]);
+
+            if ($this->form_validation->run() === FALSE) {
+                // Tambahkan error message ke session
+                $this->session->set_flashdata('error', 'Validasi form gagal. Silakan periksa kembali data yang diisi.');
+                log_message('debug', 'Form validation errors: ' . validation_errors());
+                $this->create();
+                return;
+            }
+
+            // Generate slug from title
+            $slug = url_title($this->input->post('title'), 'dash', TRUE);
+
+            // Check if slug exists, add number if needed
+            $original_slug = $slug;
+            $counter = 1;
+            while ($this->M_menu_items->slug_exists($slug)) {
+                $slug = $original_slug . '-' . $counter;
+                $counter++;
+            }
+
+            // Handle checkbox is_active
+            $is_active = $this->input->post('is_active') ? 1 : 0;
+
+            $data = [
+                'category_id' => $this->input->post('category_id'),
+                'title' => $this->input->post('title'),
+                'slug' => $slug,
+                'content' => $this->input->post('content'),
+                'icon' => $this->input->post('icon') ?: 'fas fa-file',
+                'order_position' => $this->input->post('order_position'),
+                'is_active' => $is_active,
+                'meta_title' => $this->input->post('meta_title') ?: $this->input->post('title'),
+                'meta_description' => $this->input->post('meta_description'),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            log_message('debug', 'Attempting to insert menu item: ' . json_encode($data));
+
+            if ($this->M_menu_items->insert($data)) {
+                $this->session->set_flashdata('success', 'Menu item berhasil ditambahkan!');
+                log_message('info', 'Menu item created successfully: ' . $data['title']);
+            } else {
+                $this->session->set_flashdata('error', 'Gagal menambahkan menu item ke database!');
+                log_message('error', 'Failed to insert menu item to database');
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Store menu item error: ' . $e->getMessage());
+            $this->session->set_flashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
 
         redirect('admin/menu_items');
@@ -210,37 +263,74 @@ class Menu_items extends CI_Controller
             show_404();
         }
 
-        $this->form_validation->set_rules('category_id', 'Category', 'required|integer');
-        $this->form_validation->set_rules('title', 'Title', 'required|trim|max_length[200]');
-        $this->form_validation->set_rules('slug', 'Slug', 'required|trim|max_length[200]|callback_check_slug[' . $id . ']');
-        $this->form_validation->set_rules('content', 'Content', 'trim');
-        $this->form_validation->set_rules('icon', 'Icon', 'trim|max_length[50]');
-        $this->form_validation->set_rules('order_position', 'Urutan', 'required|integer');
-        $this->form_validation->set_rules('is_active', 'Status', 'required|in_list[0,1]');
-        $this->form_validation->set_rules('meta_title', 'Meta Title', 'trim|max_length[255]');
-        $this->form_validation->set_rules('meta_description', 'Meta Description', 'trim');
+        // Set validation rules with proper error messages
+        $this->form_validation->set_rules('category_id', 'Kategori', 'required|integer', [
+            'required' => 'Kategori wajib dipilih',
+            'integer' => 'Kategori harus berupa angka'
+        ]);
+        $this->form_validation->set_rules('title', 'Judul', 'required|trim|min_length[3]|max_length[200]', [
+            'required' => 'Judul wajib diisi',
+            'min_length' => 'Judul minimal 3 karakter',
+            'max_length' => 'Judul maksimal 200 karakter'
+        ]);
+        $this->form_validation->set_rules('content', 'Konten', 'required|trim', [
+            'required' => 'Konten wajib diisi'
+        ]);
+        $this->form_validation->set_rules('icon', 'Icon', 'trim|max_length[50]', [
+            'max_length' => 'Icon maksimal 50 karakter'
+        ]);
+        $this->form_validation->set_rules('order_position', 'Urutan', 'required|integer|greater_than[0]', [
+            'required' => 'Urutan tampil wajib diisi',
+            'integer' => 'Urutan harus berupa angka',
+            'greater_than' => 'Urutan minimal 1'
+        ]);
+        $this->form_validation->set_rules('meta_title', 'Meta Title', 'trim|max_length[255]', [
+            'max_length' => 'Meta title maksimal 255 karakter'
+        ]);
+        $this->form_validation->set_rules('meta_description', 'Meta Description', 'trim|max_length[500]', [
+            'max_length' => 'Meta description maksimal 500 karakter'
+        ]);
 
         if ($this->form_validation->run() === FALSE) {
+            $this->session->set_flashdata('error', 'Validasi form gagal. Silakan periksa kembali data yang diisi.');
             $this->edit($id);
             return;
         }
 
+        // Generate new slug if title changed
+        $new_slug = $item->slug; // Keep existing slug
+        if ($this->input->post('title') != $item->title) {
+            $new_slug = url_title($this->input->post('title'), 'dash', TRUE);
+
+            // Check if new slug exists (exclude current item)
+            $original_slug = $new_slug;
+            $counter = 1;
+            while ($this->M_menu_items->slug_exists($new_slug, $id)) {
+                $new_slug = $original_slug . '-' . $counter;
+                $counter++;
+            }
+        }
+
+        // Handle checkbox is_active (0 if not checked, 1 if checked)
+        $is_active = $this->input->post('is_active') ? 1 : 0;
+
         $data = [
             'category_id' => $this->input->post('category_id'),
             'title' => $this->input->post('title'),
-            'slug' => $this->input->post('slug'),
+            'slug' => $new_slug,
             'content' => $this->input->post('content'),
-            'icon' => $this->input->post('icon'),
+            'icon' => $this->input->post('icon') ?: 'fas fa-file',
             'order_position' => $this->input->post('order_position'),
-            'is_active' => $this->input->post('is_active'),
-            'meta_title' => $this->input->post('meta_title'),
-            'meta_description' => $this->input->post('meta_description')
+            'is_active' => $is_active,
+            'meta_title' => $this->input->post('meta_title') ?: $this->input->post('title'),
+            'meta_description' => $this->input->post('meta_description'),
+            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->M_menu_items->update($id, $data)) {
             $this->session->set_flashdata('success', 'Menu item berhasil diperbarui!');
         } else {
-            $this->session->set_flashdata('error', 'Gagal memperbarui menu item!');
+            $this->session->set_flashdata('error', 'Gagal memperbarui menu item ke database!');
         }
 
         redirect('admin/menu_items');

@@ -1,18 +1,33 @@
 <style>
-    .breadcrumb-section {
-        background: var(--bg-light);
-        padding: 20px 0;
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color, #00B9AD), var(--secondary-color, #60C0D0));
+        color: white;
+        padding: 50px 0;
+        position: relative;
+        overflow: hidden;
     }
 
-    .breadcrumb {
-        background: none;
-        padding: 0;
-        margin: 0;
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 1;
     }
 
-    .breadcrumb-item a {
-        color: var(--primary-color);
-        text-decoration: none;
+    .hero-section .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-section .badge {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     .article-header {
@@ -385,27 +400,35 @@
     }
 </style>
 
-<!-- Breadcrumb -->
-<section class="breadcrumb-section">
+<!-- Hero Section -->
+<div class="hero-section">
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="<?= site_url() ?>"><i class="fas fa-home"></i> Beranda</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="<?= site_url('news') ?>">Berita</a>
-                </li>
-                <?php if (!empty($news->category_name)): ?>
-                    <li class="breadcrumb-item">
-                        <a href="<?= site_url('news/category/' . $news->category_slug) ?>"><?= $news->category_name ?></a>
-                    </li>
-                <?php endif; ?>
-                <li class="breadcrumb-item active" aria-current="page">Detail</li>
-            </ol>
-        </nav>
+        <div class="row align-items-center">
+            <div class="col-lg-10 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3" data-aos="fade-up">
+                    <i class="fas fa-newspaper me-2"></i>
+                    Detail Berita
+                </h1>
+                <p class="lead mb-3" data-aos="fade-up" data-aos-delay="100">
+                    <?= character_limiter($news->title, 100) ?>
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap" data-aos="fade-up" data-aos-delay="200">
+                    <?php if (!empty($news->category_name)): ?>
+                        <span class="badge bg-white text-primary px-3 py-2">
+                            <i class="fas fa-tag me-2"></i><?= $news->category_name ?>
+                        </span>
+                    <?php endif; ?>
+                    <span class="badge bg-white text-primary px-3 py-2">
+                        <i class="fas fa-calendar me-2"></i><?= date('d F Y', strtotime($news->published_at)) ?>
+                    </span>
+                    <span class="badge bg-white text-primary px-3 py-2">
+                        <i class="fas fa-eye me-2"></i><?= number_format($news->views ?? 0) ?> views
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
-</section>
+</div>
 
 <!-- Main Content -->
 <main class="py-5">

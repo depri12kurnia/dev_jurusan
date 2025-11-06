@@ -227,7 +227,8 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#news">
+                    <!-- <a class="nav-link" href="#news"> -->
+                    <a class="nav-link" href="<?= site_url('news') ?>">
                         <i class="fas fa-newspaper me-1"></i>Berita
                     </a>
                 </li>
