@@ -185,7 +185,7 @@
                       <li class="nav-header">Menu</li>
                       <li class="nav-item">
                           <a href="<?php echo base_url('admin/menu_categories'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'menu_categories' ? 'active' : ''; ?>">
-                              <i class="nav-icon fas fa-user"></i>
+                              <i class="nav-icon fas fa-list"></i>
                               <p>
                                   Master Menu Categories
                               </p>
@@ -193,7 +193,7 @@
                       </li>
                       <li class="nav-item">
                           <a href="<?php echo base_url('admin/menu_items'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'menu_items' ? 'active' : ''; ?>">
-                              <i class="nav-icon fas fa-user"></i>
+                              <i class="nav-icon fas fa-list"></i>
                               <p>
                                   Master Menu Items
                               </p>

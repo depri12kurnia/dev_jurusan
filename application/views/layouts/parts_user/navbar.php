@@ -223,6 +223,18 @@
                         <?php endif; ?>
                     </ul>
                 </li>
+
+                <?php
+                // Load academic menu items dynamically
+                if (!isset($kemahasiswaan_menu) || empty($kemahasiswaan_menu)) {
+                    $CI = &get_instance();
+                    if (!isset($CI->m_menu_items)) {
+                        $CI->load->model('M_menu_items', 'm_menu_items');
+                    }
+                    // Get academic category items (assuming 'kemahasiswaan' slug)
+                    $kemahasiswaan_menu = $CI->m_menu_items->get_by_category_slug('kemahasiswaan');
+                }
+                ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="kemahasiswaanDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user-graduate me-1"></i>Kemahasiswaan

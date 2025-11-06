@@ -109,6 +109,10 @@ $route['api/news/stats'] = 'news/get_stats';
 $route['akademik/(:any)'] = 'akademik/index/$1';
 $route['akademik'] = 'akademik';
 
+// Kemahasiswaan Routes (Frontend)
+$route['kemahasiswaan/(:any)'] = 'kemahasiswaan/index/$1';
+$route['kemahasiswaan'] = 'kemahasiswaan';
+
 // Tentang Routes (Frontend)
 $route['tentang/(:any)'] = 'tentang/index/$1';
 $route['tentang'] = 'tentang';
