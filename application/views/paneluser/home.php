@@ -727,9 +727,9 @@
 <section class="cta">
     <div class="container">
         <div data-aos="fade-up">
-            <h2>Bergabunglah dengan Keluarga Besar Fakultas Kesehatan</h2>
+            <h2>Bergabunglah dengan Keluarga Besar <br>Poltekkes Kemenkes Jakarta III</h2>
             <p>Wujudkan cita-cita mulia Anda menjadi tenaga kesehatan profesional yang berkompeten</p>
-            <button class="btn btn-cta">Daftar Sekarang</button>
+            <a href="#" class="btn btn-cta">Daftar Sekarang</a>
         </div>
     </div>
 </section>

@@ -219,10 +219,27 @@
                             <?php endforeach; ?>
                         <?php else: ?>
                             <!-- Fallback static menu if no database items -->
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt me-2"></i>Kalender Akademik</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-alt me-2"></i>Kurikulum</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-award me-2"></i>Beasiswa</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-clipboard-check me-2"></i>Uji Kompetensi</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-calendar-alt me-2"></i>Kosong</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="kemahasiswaanDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-graduate me-1"></i>Kemahasiswaan
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="kemahasiswaanDropdown">
+                        <?php if (!empty($kemahasiswaan_menu)): ?>
+                            <?php foreach ($kemahasiswaan_menu as $item): ?>
+                                <li>
+                                    <a class="dropdown-item" href="<?= site_url('kemahasiswaan/' . $item->slug) ?>">
+                                        <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-file-alt' ?> me-2"></i>
+                                        <?= htmlspecialchars($item->title) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Fallback static menu if no database items -->
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-empty-alt"></i>Kosong</a></li>
                         <?php endif; ?>
                     </ul>
                 </li>

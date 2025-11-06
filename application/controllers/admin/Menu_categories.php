@@ -139,10 +139,68 @@ class Menu_categories extends CI_Controller
 
     public function create()
     {
+        // Handle form submission
+        if ($this->input->method() === 'post') {
+            $this->_process_create_form();
+            return;
+        }
+
+        // Show form
         $data['website'] = $this->M_settings->get_main_settings();
         $data['title'] = 'Tambah Menu Category | Admin Panel';
         $data['content'] = 'paneladmin/menu/categories/create';
         $this->load->view('layouts/adminlte3', $data);
+    }
+
+    private function _process_create_form()
+    {
+        // Set validation rules with custom error messages
+        $this->form_validation->set_rules('name', 'Nama Kategori', 'required|trim|min_length[2]|max_length[100]', [
+            'required' => 'Nama kategori wajib diisi',
+            'min_length' => 'Nama kategori minimal 2 karakter',
+            'max_length' => 'Nama kategori maksimal 100 karakter'
+        ]);
+        $this->form_validation->set_rules('icon', 'Icon', 'trim|max_length[50]', [
+            'max_length' => 'Icon maksimal 50 karakter'
+        ]);
+        $this->form_validation->set_rules('order_position', 'Urutan', 'required|integer|greater_than[0]', [
+            'required' => 'Urutan tampil wajib diisi',
+            'integer' => 'Urutan harus berupa angka',
+            'greater_than' => 'Urutan minimal 1'
+        ]);
+
+        if ($this->form_validation->run() === FALSE) {
+            // Validation failed, show form again with errors
+            $data['website'] = $this->M_settings->get_main_settings();
+            $data['title'] = 'Tambah Menu Category | Admin Panel';
+            $data['content'] = 'paneladmin/menu/categories/create';
+            $this->load->view('layouts/adminlte3', $data);
+            return;
+        }
+
+        // Generate slug from name
+        $slug = url_title($this->input->post('name'), 'dash', TRUE);
+
+        // Check if slug already exists
+        if ($this->M_menu_categories->slug_exists($slug)) {
+            $slug .= '-' . time();
+        }
+
+        $data = [
+            'name' => $this->input->post('name'),
+            'slug' => $slug,
+            'icon' => $this->input->post('icon') ?: 'fas fa-folder',
+            'order_position' => $this->input->post('order_position'),
+            'is_active' => $this->input->post('is_active') ? 1 : 0
+        ];
+
+        if ($this->M_menu_categories->insert($data)) {
+            $this->session->set_flashdata('success', 'Menu category berhasil ditambahkan!');
+            redirect('admin/menu_categories');
+        } else {
+            $this->session->set_flashdata('error', 'Gagal menyimpan data! Silakan coba lagi.');
+            redirect('admin/menu_categories/create');
+        }
     }
 
     public function store()

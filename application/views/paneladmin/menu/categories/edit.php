@@ -97,28 +97,6 @@
                                     </small>
                                 </div>
 
-                                <!-- Description Field -->
-                                <div class="form-group">
-                                    <label for="description" class="form-label">
-                                        <i class="fas fa-align-left mr-1"></i>
-                                        Deskripsi
-                                    </label>
-                                    <textarea class="form-control <?= form_error('description') ? 'is-invalid' : '' ?>"
-                                        id="description"
-                                        name="description"
-                                        rows="3"
-                                        placeholder="Deskripsi kategori menu (opsional)"><?= set_value('description', $category->description) ?></textarea>
-                                    <?php if (form_error('description')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= form_error('description') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <small class="form-text text-muted">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Deskripsi singkat tentang kategori menu ini
-                                    </small>
-                                </div>
-
                                 <!-- Icon Field -->
                                 <div class="form-group">
                                     <label for="icon" class="form-label">
@@ -260,12 +238,12 @@
                         <div class="row text-center">
                             <div class="col-6">
                                 <div class="border-right">
-                                    <h4 class="text-primary"><?= $items_count ?></h4>
+                                    <!-- <h4 class="text-primary"><?= $items_count ?></h4> -->
                                     <small class="text-muted">Total Item</small>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <h4 class="text-success"><?= $active_items_count ?></h4>
+                                <!-- <h4 class="text-success"><?= $active_items_count ?></h4> -->
                                 <small class="text-muted">Item Aktif</small>
                             </div>
                         </div>
@@ -278,20 +256,6 @@
                                 <code><?= base_url($category->slug) ?></code>
                             </p>
                         </div>
-
-                        <?php if ($items_count > 0): ?>
-                            <div class="mb-3">
-                                <h6><i class="fas fa-list text-primary mr-1"></i> Item Terbaru</h6>
-                                <?php if (isset($recent_items) && !empty($recent_items)): ?>
-                                    <?php foreach ($recent_items as $item): ?>
-                                        <p class="text-muted small mb-1">
-                                            <i class="<?= $item->icon ?: 'fas fa-file' ?> mr-1"></i>
-                                            <?= $item->title ?>
-                                        </p>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
 
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle mr-1"></i>

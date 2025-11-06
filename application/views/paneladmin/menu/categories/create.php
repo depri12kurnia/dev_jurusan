@@ -51,6 +51,27 @@
                             </div>
                         <?php endif; ?>
 
+                        <!-- Validation Errors Summary -->
+                        <?php if (validation_errors()): ?>
+                            <div class="alert alert-danger alert-dismissible">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Terdapat kesalahan dalam pengisian form:</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <ul class="mb-0 mt-2">
+                                    <?php
+                                    $errors = explode("\n", strip_tags(validation_errors()));
+                                    foreach ($errors as $error):
+                                        if (trim($error)):
+                                    ?>
+                                            <li><?= trim($error) ?></li>
+                                    <?php
+                                        endif;
+                                    endforeach;
+                                    ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <!-- Name Field -->
@@ -65,6 +86,8 @@
                                         name="name"
                                         value="<?= set_value('name') ?>"
                                         placeholder="Masukkan nama kategori menu"
+                                        minlength="2"
+                                        maxlength="100"
                                         required>
                                     <?php if (form_error('name')): ?>
                                         <div class="invalid-feedback">
@@ -74,28 +97,9 @@
                                     <small class="form-text text-muted">
                                         <i class="fas fa-info-circle mr-1"></i>
                                         Nama kategori yang akan ditampilkan di menu navigasi
-                                    </small>
-                                </div>
-
-                                <!-- Description Field -->
-                                <div class="form-group">
-                                    <label for="description" class="form-label">
-                                        <i class="fas fa-align-left mr-1"></i>
-                                        Deskripsi
-                                    </label>
-                                    <textarea class="form-control <?= form_error('description') ? 'is-invalid' : '' ?>"
-                                        id="description"
-                                        name="description"
-                                        rows="3"
-                                        placeholder="Deskripsi kategori menu (opsional)"><?= set_value('description') ?></textarea>
-                                    <?php if (form_error('description')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= form_error('description') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <small class="form-text text-muted">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Deskripsi singkat tentang kategori menu ini
+                                        <span class="float-right">
+                                            <span id="name-count">0</span>/100 karakter
+                                        </span>
                                     </small>
                                 </div>
 
@@ -116,7 +120,9 @@
                                             id="icon"
                                             name="icon"
                                             value="<?= set_value('icon', 'fas fa-folder') ?>"
-                                            placeholder="fas fa-folder">
+                                            placeholder="fas fa-folder"
+                                            maxlength="50"
+                                            pattern="^fa[srb]? fa-[a-z0-9-]+$">
                                         <div class="input-group-append">
                                             <button type="button" class="btn btn-outline-secondary" id="icon-picker-btn">
                                                 <i class="fas fa-search mr-1"></i> Pilih
@@ -274,10 +280,43 @@
 
 <script>
     $(document).ready(function() {
+        // Character counters
+        function updateCharCount(selector, countSelector, maxLength) {
+            var length = $(selector).val().length;
+            var counter = $(countSelector);
+            counter.text(length);
+
+            if (length > maxLength * 0.8) {
+                counter.parent().removeClass('text-muted text-warning').addClass('text-warning');
+            }
+            if (length >= maxLength) {
+                counter.parent().removeClass('text-muted text-warning').addClass('text-danger');
+            }
+            if (length < maxLength * 0.8) {
+                counter.parent().removeClass('text-warning text-danger').addClass('text-muted');
+            }
+        }
+
+        // Initialize character counters
+        $('#name').on('input', function() {
+            updateCharCount('#name', '#name-count', 100);
+        });
+
+        // Update counters on page load
+        updateCharCount('#name', '#name-count', 100);
+
         // Icon preview update
         $('#icon').on('input', function() {
             var iconClass = $(this).val() || 'fas fa-folder';
             $('#icon-preview i').removeClass().addClass(iconClass);
+
+            // Validate icon format
+            var iconPattern = /^fa[srb]? fa-[a-z0-9-]+$/;
+            if (iconClass && !iconPattern.test(iconClass)) {
+                showFieldError('icon', 'Format icon tidak valid. Gunakan format: fas fa-nama-icon');
+            } else {
+                clearFieldError('icon');
+            }
         });
 
         // Icon picker
@@ -286,13 +325,50 @@
             $('#iconPickerModal').modal('show');
         });
 
-        // Form validation
+        // Enhanced form validation
         $('.needs-validation').on('submit', function(e) {
-            if (this.checkValidity() === false) {
+            var form = this;
+            var isValid = true;
+
+            // Clear previous custom errors
+            $('.custom-error').remove();
+
+            // Validate name
+            var name = $('#name').val().trim();
+            if (name.length < 2) {
+                showFieldError('name', 'Nama kategori minimal 2 karakter');
+                isValid = false;
+            } else if (name.length > 100) {
+                showFieldError('name', 'Nama kategori maksimal 100 karakter');
+                isValid = false;
+            }
+
+
+
+            // Validate icon
+            var icon = $('#icon').val().trim();
+            if (icon) {
+                var iconPattern = /^fa[srb]? fa-[a-z0-9-]+$/;
+                if (!iconPattern.test(icon)) {
+                    showFieldError('icon', 'Format icon tidak valid. Gunakan format: fas fa-nama-icon');
+                    isValid = false;
+                }
+            }
+
+            // Validate order position
+            var orderPosition = $('#order_position').val();
+            if (!orderPosition || orderPosition < 1) {
+                showFieldError('order_position', 'Urutan minimal 1');
+                isValid = false;
+            }
+
+            if (!isValid || form.checkValidity() === false) {
                 e.preventDefault();
                 e.stopPropagation();
+                showValidationSummary();
             }
-            $(this).addClass('was-validated');
+
+            $(form).addClass('was-validated');
         });
 
         // Auto-generate slug preview (optional enhancement)
@@ -306,6 +382,45 @@
             // You can show slug preview here if needed
         });
     });
+
+    // Validation helper functions
+    function showFieldError(fieldName, message) {
+        clearFieldError(fieldName);
+        var field = $('#' + fieldName);
+        var errorDiv = $('<div class="invalid-feedback custom-error d-block">' + message + '</div>');
+        field.addClass('is-invalid').after(errorDiv);
+    }
+
+    function clearFieldError(fieldName) {
+        var field = $('#' + fieldName);
+        field.removeClass('is-invalid').siblings('.custom-error').remove();
+    }
+
+    function showValidationSummary() {
+        var errors = $('.custom-error').map(function() {
+            return $(this).text();
+        }).get();
+
+        if (errors.length > 0) {
+            var alertHtml = `
+                <div class="alert alert-danger alert-dismissible mt-3">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <strong>Terdapat kesalahan dalam pengisian form:</strong>
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <ul class="mb-0 mt-2">
+                        ${errors.map(error => '<li>' + error + '</li>').join('')}
+                    </ul>
+                </div>
+            `;
+
+            $('.card-body').prepend(alertHtml);
+            $('html, body').animate({
+                scrollTop: $('.alert-danger').offset().top - 100
+            }, 500);
+        }
+    }
 
     function loadIconPicker() {
         var icons = [
