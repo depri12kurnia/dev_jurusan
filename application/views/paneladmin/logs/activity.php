@@ -6,38 +6,41 @@
             </div>
             <div class="col-6">
                 <p class="btn btn-group">
-                    <button class="btn btn-danger btn-sm" onclick="delete_activity()"><i class="fa fa-trash"></i> Delete All</a></button>
+                    <button class="btn btn-danger btn-sm" onclick="delete_activity()">
+                        <i class="fa fa-trash"></i> Delete All Activity Logs
+                    </button>
                 </p>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <table id="data_activity" class="table table-bordered table-hover small">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>user</th>
-                            <th>action</th>
-                            <th>timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>#</th>
-                            <th>user</th>
-                            <th>action</th>
-                            <th>timestamp</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
+        <!-- /.card-header -->
+        <div class="card-body">
+            <table id="data_activity" class="table table-bordered table-hover small">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>user</th>
+                        <th>action</th>
+                        <th>timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>#</th>
+                        <th>user</th>
+                        <th>action</th>
+                        <th>timestamp</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- /.card-body -->
     </div>
-    <!-- /.col -->
+    <!-- /.card -->
+</div>
+<!-- /.col -->
 </div>
 <input type="hidden" id="csrf_token" name="csrf_token_jkt3" value="<?= $this->security->get_csrf_hash(); ?>">
 
@@ -45,13 +48,20 @@
     var save_method;
     var table;
 
-    function getCsrfToken() {
-        let token = document.cookie.split('; ')
-            .find(row => row.startsWith('csrf_cookie_jkt3='))
-            ?.split('=')[1] || '';
+    // CSRF Token handling
+    var csrfName = '<?php echo $csrf_token; ?>';
+    var csrfHash = '<?php echo $csrf_hash; ?>';
 
-        // console.log("CSRF Token dari Cookie:", token); // Debug
-        return token;
+    function refreshCsrfToken() {
+        $.get('<?php echo base_url('admin/activity/get_csrf_token'); ?>', function(response) {
+            var data = JSON.parse(response);
+            csrfName = data.csrf_token;
+            csrfHash = data.csrf_hash;
+        });
+    }
+
+    function getCsrfToken() {
+        return csrfHash;
     }
 
     function getCookie(name) {
@@ -86,31 +96,28 @@
     });
 
     function delete_activity() {
-        if (confirm('Are you sure you want to delete this data?')) {
+        if (confirm('Are you sure you want to delete all activity logs?')) {
             $.ajax({
                 url: "<?php echo site_url('admin/activity/delete_all_activity') ?>",
                 type: "POST",
-                data: {
-                    csrf_token_jkt3: getCsrfToken() // Kirim CSRF token
-                },
                 dataType: "JSON",
-                cache: false, // Hindari cache request
+                cache: false,
                 success: function(data) {
                     if (data.status === "success") {
-                        $('#modal_form').modal('hide');
-                        reload_table();
+                        alert("All activity logs deleted successfully!");
+                        table.ajax.reload(); // Reload DataTable
 
-                        // Debugging: Tampilkan token CSRF baru di console
-                        console.log("Token CSRF baru:", data.csrf_token);
-
-                        // Update CSRF token di cookie untuk request selanjutnya
-                        document.cookie = "csrf_cookie_jkt3=" + data.csrf_token + "; path=/";
+                        // Update CSRF token untuk request selanjutnya
+                        if (data.csrf_token) {
+                            csrfHash = data.csrf_token;
+                        }
                     } else {
                         alert("Failed to delete activity: " + data.message);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error("AJAX Error: ", textStatus, errorThrown);
+                    console.error("Response: ", jqXHR.responseText);
                     alert("Error deleting data. Please try again.");
                 }
             });

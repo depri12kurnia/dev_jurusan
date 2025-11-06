@@ -63,7 +63,7 @@ class M_category extends CI_Model
 
     public function get_by_id($id)
     {
-        $this->db->select('id, name, description');
+        $this->db->select('id, name, slug');
         $this->db->from($this->table);
         $this->db->where('id', $id);
         $query = $this->db->get();

@@ -131,14 +131,6 @@
                               </p>
                           </a>
                       </li>
-                      <li class="nav-item">
-                          <a href="<?php echo base_url('admin/pages'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'pages' ? 'active' : ''; ?>">
-                              <i class="nav-icon fas fa-file"></i>
-                              <p>
-                                  Master Pages
-                              </p>
-                          </a>
-                      </li>
                       <li class="nav-header">Media</li>
                       <li class="nav-item">
                           <a href="<?php echo base_url('admin/sliders'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'sliders' ? 'active' : ''; ?>">
@@ -170,6 +162,23 @@
                               <i class="nav-icon fas fa-list"></i>
                               <p>
                                   Master Type
+                              </p>
+                          </a>
+                      </li>
+                      <li class="nav-header">SDM</li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/dosen'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'dosen' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-user"></i>
+                              <p>
+                                  Master Dosen
+                              </p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="<?php echo base_url('admin/staf'); ?>" class="nav-link <?= ($this->uri->segment(1) == 'admin') && $this->uri->segment(2) == 'staf' ? 'active' : ''; ?>">
+                              <i class="nav-icon fas fa-user"></i>
+                              <p>
+                                  Master Staf/Karyawan
                               </p>
                           </a>
                       </li>

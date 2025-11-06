@@ -2,16 +2,26 @@
 class M_ddownload extends CI_Model
 {
     var $table = 'd_downloads';
-    var $column_order = array('id', 'd_category_id', 'd_type_id', 'name_files');
-    var $column_search = array('title', 'slug', 'author');
+    var $column_order = array('id', 'd_category_id', 'd_type_id', 'name', 'name_files');
+    var $column_search = array('d_downloads.name', 'd_downloads.name_files', 'd_category.name', 'd_type.name');
     var $order = array('created_at' => 'desc');
 
-    private function _get_datatables_query()
+    private function _get_datatables_query($category_filter = null, $type_filter = null)
     {
         $this->db->select('d_downloads.*, d_category.name as category_name, d_type.name as type_name');
         $this->db->from($this->table);
-        $this->db->join('d_category', 'd_category.id = d_category.d_category_id', 'left');
+        $this->db->join('d_category', 'd_category.id = d_downloads.d_category_id', 'left');
         $this->db->join('d_type', 'd_type.id = d_downloads.d_type_id', 'left');
+
+        // Apply filters
+        if (!empty($category_filter)) {
+            $this->db->where('d_category.name', $category_filter);
+        }
+
+        if (!empty($type_filter)) {
+            $this->db->where('d_type.name', $type_filter);
+        }
+
         $this->db->order_by('d_downloads.created_at', 'desc');
 
         $i = 0;
@@ -39,9 +49,9 @@ class M_ddownload extends CI_Model
         }
     }
 
-    function get_datatables()
+    function get_datatables($category_filter = null, $type_filter = null)
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($category_filter, $type_filter);
         if ($_POST['length'] != -1) {
             $this->db->limit($_POST['length'], $_POST['start']);
         }
@@ -49,9 +59,9 @@ class M_ddownload extends CI_Model
         return $query->result();
     }
 
-    function count_filtered()
+    function count_filtered($category_filter = null, $type_filter = null)
     {
-        $this->_get_datatables_query();
+        $this->_get_datatables_query($category_filter, $type_filter);
         $query = $this->db->get();
         return $query->num_rows();
     }
@@ -82,7 +92,7 @@ class M_ddownload extends CI_Model
     {
         $this->db->select('d_downloads.*, d_category.name as category_name, d_type.name as type_name');
         $this->db->from($this->table);
-        $this->db->join('d_category', 'd_category.id = d_category.d_category_id', 'left');
+        $this->db->join('d_category', 'd_category.id = d_downloads.d_category_id', 'left');
         $this->db->join('d_type', 'd_type.id = d_downloads.d_type_id', 'left');
         $this->db->where('d_downloads.id', $id);
         $query = $this->db->get();
