@@ -411,7 +411,7 @@
         <?php endif; ?>
     </div>
     <div>
-        <a href="<?= site_url('paneladmin/prodi/edit/' . $prodi->id) ?>" class="btn btn-warning btn-sm">
+        <a href="<?= site_url('admin/prodi/edit/' . $prodi->id) ?>" class="btn btn-warning btn-sm">
             <i class="fas fa-edit mr-1"></i> Edit
         </a>
         <button type="button" class="btn btn-danger btn-sm" onclick="deleteProdi(<?= $prodi->id ?>, '<?= $prodi->nama_prodi ?>')">

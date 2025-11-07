@@ -540,7 +540,7 @@
                         <!-- Additional Info -->
                         <div class="mt-4 pt-3 border-top border-white border-opacity-25">
                             <small class="text-white-75">
-                                <i class="fas fa-clock me-1"></i> Pendaftaran dibuka sepanjang tahun
+                                <i class="fas fa-clock me-1"></i> Setiap Pembukaan Pendaftaran Buka Website Ini
                             </small>
                         </div>
                     </div>

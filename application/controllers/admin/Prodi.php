@@ -47,7 +47,7 @@ class Prodi extends CI_Controller
     {
         $this->form_validation->set_rules('nama_prodi', 'Nama Program Studi', 'required|trim|max_length[200]');
         $this->form_validation->set_rules('kode_prodi', 'Kode Program Studi', 'required|trim|max_length[20]|is_unique[program_studi.kode_prodi]');
-        $this->form_validation->set_rules('jenjang', 'Jenjang', 'required|in_list[D3,D4,S1,S2,S3,PROFESI]');
+        $this->form_validation->set_rules('jenjang', 'Jenjang', 'required|in_list[D3,D4,Profesi]');
         $this->form_validation->set_rules('gelar', 'Gelar', 'required|trim|max_length[100]');
 
         if ($this->form_validation->run() == FALSE) {
@@ -172,7 +172,7 @@ class Prodi extends CI_Controller
 
         $this->form_validation->set_rules('nama_prodi', 'Nama Program Studi', 'required|trim|max_length[200]');
         $this->form_validation->set_rules('kode_prodi', 'Kode Program Studi', 'required|trim|max_length[20]|callback_check_unique_kode_prodi[' . $id . ']');
-        $this->form_validation->set_rules('jenjang', 'Jenjang', 'required|in_list[D3,D4,S1,S2,S3,PROFESI]');
+        $this->form_validation->set_rules('jenjang', 'Jenjang', 'required|in_list[D3,D4,Profesi]');
         $this->form_validation->set_rules('gelar', 'Gelar', 'required|trim|max_length[100]');
 
         if ($this->form_validation->run() == FALSE) {
