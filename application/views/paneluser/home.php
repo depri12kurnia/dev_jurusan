@@ -729,7 +729,7 @@
         <div data-aos="fade-up">
             <h2>Bergabunglah dengan Keluarga Besar <br>Poltekkes Kemenkes Jakarta III</h2>
             <p>Wujudkan cita-cita mulia Anda menjadi tenaga kesehatan profesional yang berkompeten</p>
-            <a href="#" class="btn btn-cta">Daftar Sekarang</a>
+            <a href="https://sipenmaru.poltekkesjakarta3.ac.id/" class="btn btn-cta">Daftar Sekarang</a>
         </div>
     </div>
 </section>

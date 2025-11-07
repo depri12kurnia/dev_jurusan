@@ -529,7 +529,7 @@
 
                         <!-- CTA Buttons -->
                         <div class="d-grid gap-2">
-                            <a href="<?= site_url('pendaftaran?prodi=' . $prodi->kode_prodi) ?>" class="btn btn-light btn-lg fw-semibold shadow hover-lift">
+                            <a href="https://sipenmaru.poltekkesjakarta3.ac.id/" class="btn btn-light btn-lg fw-semibold shadow hover-lift">
                                 <i class="fas fa-user-plus me-2"></i> Daftar Sekarang
                             </a>
                             <a href="<?= site_url('konsultasi') ?>" class="btn btn-outline-light fw-semibold">

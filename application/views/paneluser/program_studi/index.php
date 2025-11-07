@@ -289,7 +289,7 @@
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <a href="<?= site_url('pendaftaran') ?>" class="btn btn-light btn-lg btn-block">
+                        <a href="https://sipenmaru.poltekkesjakarta3.ac.id/" class="btn btn-light btn-lg btn-block">
                             <i class="fas fa-user-plus mr-2"></i> Daftar Sekarang
                         </a>
                     </div>
@@ -305,106 +305,172 @@
 </section>
 
 <script>
-    $(document).ready(function() {
-        // Smooth scroll untuk anchor links
-        $('a[href^="#"]').on('click', function(e) {
-            e.preventDefault();
-            const target = $(this.getAttribute('href'));
-            if (target.length) {
-                $('html, body').stop().animate({
-                    scrollTop: target.offset().top - 80
-                }, 1000, 'easeInOutExpo');
-            }
-        });
+    // Initialize program studi functionality
+    function initializeProgramStudi() {
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).ready(function($) {
+                // Smooth scroll untuk anchor links
+                $('a[href^="#"]').on('click', function(e) {
+                    e.preventDefault();
+                    const target = $(this.getAttribute('href'));
+                    if (target.length) {
+                        $('html, body').stop().animate({
+                            scrollTop: target.offset().top - 80
+                        }, 1000, 'easeInOutExpo');
+                    }
+                });
 
-        // Jenjang filter tabs
-        $('#jenjangTabs .nav-link').on('click', function(e) {
-            e.preventDefault();
+                // Jenjang filter tabs
+                $('#jenjangTabs .nav-link').on('click', function(e) {
+                    e.preventDefault();
 
-            // Update active tab
-            $('#jenjangTabs .nav-link').removeClass('active');
-            $(this).addClass('active');
+                    // Update active tab
+                    $('#jenjangTabs .nav-link').removeClass('active');
+                    $(this).addClass('active');
 
-            var jenjang = $(this).data('jenjang');
+                    var jenjang = $(this).data('jenjang');
 
-            // Filter programs
-            if (jenjang === '') {
-                $('.program-item').show();
-            } else {
-                $('.program-item').hide();
-                $('.program-item[data-jenjang="' + jenjang + '"]').show();
-            }
-        });
+                    // Filter programs
+                    if (jenjang === '') {
+                        $('.program-item').show();
+                    } else {
+                        $('.program-item').hide();
+                        $('.program-item[data-jenjang="' + jenjang + '"]').show();
+                    }
+                });
 
-        // Load more functionality
-        $('#loadMoreBtn').on('click', function() {
-            var btn = $(this);
-            var offset = btn.data('offset');
-            var jenjang = $('#jenjangTabs .nav-link.active').data('jenjang') || '';
+                // Load more functionality
+                $('#loadMoreBtn').on('click', function() {
+                    var btn = $(this);
+                    var offset = btn.data('offset');
+                    var jenjang = $('#jenjangTabs .nav-link.active').data('jenjang') || '';
 
-            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memuat...');
+                    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i> Memuat...');
 
-            $.post('<?= site_url("program-studi/ajax_get_programs") ?>', {
-                offset: offset,
-                limit: 12,
-                jenjang: jenjang
-            }, function(response) {
-                if (response.status === 'success' && response.data.length > 0) {
-                    var html = '';
-                    response.data.forEach(function(prodi) {
-                        html += generateProgramCard(prodi);
+                    $.post('<?= site_url("program-studi/ajax_get_programs") ?>', {
+                        offset: offset,
+                        limit: 12,
+                        jenjang: jenjang
+                    }, function(response) {
+                        if (response.status === 'success' && response.data.length > 0) {
+                            var html = '';
+                            response.data.forEach(function(prodi) {
+                                html += generateProgramCard(prodi);
+                            });
+
+                            $('#programsGrid').append(html);
+                            btn.data('offset', offset + response.data.length);
+
+                            if (!response.has_more) {
+                                btn.hide();
+                            }
+                        } else {
+                            btn.hide();
+                        }
+
+                        btn.prop('disabled', false).html('<i class="fas fa-plus-circle mr-2"></i> Muat Lebih Banyak');
+                    }, 'json').fail(function() {
+                        btn.prop('disabled', false).html('<i class="fas fa-plus-circle mr-2"></i> Muat Lebih Banyak');
+                        alert('Terjadi kesalahan saat memuat data');
+                    });
+                });
+            });
+        } else {
+            // Vanilla JavaScript fallback
+            initializeVanillaJS();
+        }
+    }
+
+    // Vanilla JavaScript fallback
+    function initializeVanillaJS() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Jenjang filter tabs fallback
+            const tabLinks = document.querySelectorAll('#jenjangTabs .nav-link');
+            const programItems = document.querySelectorAll('.program-item');
+
+            tabLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all tabs
+                    tabLinks.forEach(function(tab) {
+                        tab.classList.remove('active');
                     });
 
-                    $('#programsGrid').append(html);
-                    btn.data('offset', offset + response.data.length);
+                    // Add active class to clicked tab
+                    this.classList.add('active');
 
-                    if (!response.has_more) {
-                        btn.hide();
-                    }
-                } else {
-                    btn.hide();
-                }
+                    const jenjang = this.getAttribute('data-jenjang');
 
-                btn.prop('disabled', false).html('<i class="fas fa-plus-circle mr-2"></i> Muat Lebih Banyak');
-            }, 'json').fail(function() {
-                btn.prop('disabled', false).html('<i class="fas fa-plus-circle mr-2"></i> Muat Lebih Banyak');
-                alert('Terjadi kesalahan saat memuat data');
+                    // Filter programs
+                    programItems.forEach(function(item) {
+                        if (jenjang === '' || item.getAttribute('data-jenjang') === jenjang) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
             });
-        });
 
-        function generateProgramCard(prodi) {
-            var featuredBadge = '';
-            if (prodi.is_featured == 1) {
-                featuredBadge = '<span class="badge badge-warning badge-pill ml-1"><i class="fas fa-star"></i></span>';
+            // Load more button fallback (simplified)
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    this.style.display = 'none';
+                    alert('Fitur load more memerlukan jQuery. Silakan refresh halaman.');
+                });
             }
+        });
+    }
 
-            return '<div class="col-lg-3 col-md-4 col-sm-6 mb-4 program-item" data-jenjang="' + prodi.jenjang + '">' +
-                '<div class="card program-card h-100 border-0 shadow-sm">' +
-                '<div class="card-body">' +
-                '<div class="d-flex align-items-center mb-2">' +
-                '<div class="program-icon-small mr-2" style="background-color: ' + prodi.warna + '20; color: ' + prodi.warna + '; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">' +
-                '<i class="' + prodi.icon + '"></i>' +
-                '</div>' +
-                '<span class="badge badge-primary badge-pill">' + prodi.jenjang + '</span>' +
-                featuredBadge +
-                '</div>' +
-                '<h6 class="card-title font-weight-bold mb-2">' +
-                '<a href="<?= site_url("program-studi/") ?>' + prodi.slug + '" class="text-dark text-decoration-none">' +
-                prodi.nama_prodi +
-                '</a>' +
-                '</h6>' +
-                '<p class="text-muted small mb-3">' + (prodi.deskripsi ? prodi.deskripsi.substring(0, 60) + '...' : '') + '</p>' +
-                '<div class="d-flex justify-content-between align-items-center">' +
-                '<small class="text-muted">' + prodi.kode_prodi + '</small>' +
-                '<a href="<?= site_url("program-studi/") ?>' + prodi.slug + '" class="btn btn-sm btn-outline-primary">' +
-                '<i class="fas fa-eye mr-1"></i> Lihat' +
-                '</a>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>';
+    // Generate program card function
+    function generateProgramCard(prodi) {
+        var featuredBadge = '';
+        if (prodi.is_featured == 1) {
+            featuredBadge = '<span class="badge badge-warning badge-pill ml-1"><i class="fas fa-star"></i></span>';
         }
-    });
+
+        return '<div class="col-lg-3 col-md-4 col-sm-6 mb-4 program-item" data-jenjang="' + prodi.jenjang + '">' +
+            '<div class="card program-card h-100 border-0 shadow-sm">' +
+            '<div class="card-body">' +
+            '<div class="d-flex align-items-center mb-2">' +
+            '<div class="program-icon-small mr-2" style="background-color: ' + prodi.warna + '20; color: ' + prodi.warna + '; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">' +
+            '<i class="' + prodi.icon + '"></i>' +
+            '</div>' +
+            '<span class="badge badge-primary badge-pill">' + prodi.jenjang + '</span>' +
+            featuredBadge +
+            '</div>' +
+            '<h6 class="card-title font-weight-bold mb-2">' +
+            '<a href="<?= site_url("program-studi/") ?>' + prodi.slug + '" class="text-dark text-decoration-none">' +
+            prodi.nama_prodi +
+            '</a>' +
+            '</h6>' +
+            '<p class="text-muted small mb-3">' + (prodi.deskripsi ? prodi.deskripsi.substring(0, 60) + '...' : '') + '</p>' +
+            '<div class="d-flex justify-content-between align-items-center">' +
+            '<small class="text-muted">' + prodi.kode_prodi + '</small>' +
+            '<a href="<?= site_url("program-studi/") ?>' + prodi.slug + '" class="btn btn-sm btn-outline-primary">' +
+            '<i class="fas fa-eye mr-1"></i> Lihat' +
+            '</a>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+    }
+
+    // Initialize functionality
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeProgramStudi);
+    } else {
+        initializeProgramStudi();
+    }
+
+    // Fallback initialization
+    setTimeout(function() {
+        if (typeof jQuery === 'undefined') {
+            initializeVanillaJS();
+        }
+    }, 500);
 </script>
 
 <style>
