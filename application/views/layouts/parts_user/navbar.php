@@ -11,7 +11,7 @@
             if (!empty($navbar_data)) {
                 if (!empty($navbar_data->logo)) {
                     // Ada logo, tampilkan logo
-                    echo '<img src="' . base_url('assets/uploads/settings/' . $navbar_data->logo) . '" alt="Logo" style="max-height: 80px;">';
+                    echo '<img src="' . base_url('assets/uploads/settings/' . $navbar_data->logo) . '" alt="Logo" style="max-height: 120px;">';
                 } else {
                     // Tidak ada logo, tampilkan nama website
                     echo '<span class="brand-text fw-bold">' . (!empty($navbar_data->name) ? htmlspecialchars($navbar_data->name) : 'Website') . '</span>';
@@ -58,6 +58,12 @@
                                     </a>
                                 </li>
                             <?php endforeach; ?>
+                            <li>
+                                <a class="dropdown-item" href="<?= site_url('sdm') ?>">
+                                    <i class="fas fa-info-circle"></i>
+                                    Sumber Daya Manusia
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 <?php elseif (!empty($tentang_menu) && count($tentang_menu) == 1): ?>
@@ -72,7 +78,7 @@
                     <!-- Fallback static link -->
                     <li class="nav-item">
                         <a class="nav-link" href="#about">
-                            <i class="fas fa-info-circle me-1"></i>Tentang
+                            <i class="fas fa-info-circle me-1"></i>Kosong
                         </a>
                     </li>
                 <?php endif; ?>

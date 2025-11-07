@@ -117,6 +117,13 @@ $route['kemahasiswaan'] = 'kemahasiswaan';
 $route['tentang/(:any)'] = 'tentang/index/$1';
 $route['tentang'] = 'tentang';
 
+// SDM Routes (Frontend)
+$route['sdm'] = 'sdm/index';
+$route['sdm/detail-dosen/(:num)'] = 'sdm/detail_dosen/$1';
+$route['sdm/detail-staf/(:num)'] = 'sdm/detail_staf/$1';
+$route['sdm/ajax/dosen-by-prodi'] = 'sdm/get_dosen_by_prodi';
+$route['sdm/ajax/staf-by-divisi'] = 'sdm/get_staf_by_divisi';
+
 // Menu System Routes (Frontend)
 $route['page/(:any)'] = 'pages/show/$1';
 $route['category/(:any)'] = 'pages/category/$1';
