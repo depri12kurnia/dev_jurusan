@@ -61,7 +61,9 @@
     }
 
     function getCsrfToken() {
-        return csrfHash;
+        // Get current CSRF token from hidden input or variable
+        var token = $('#csrf_token').val() || csrfHash;
+        return token;
     }
 
     function getCookie(name) {
@@ -102,6 +104,9 @@
                 type: "POST",
                 dataType: "JSON",
                 cache: false,
+                data: {
+                    'csrf_token_jkt3': getCsrfToken() // Send CSRF token
+                },
                 success: function(data) {
                     if (data.status === "success") {
                         alert("All activity logs deleted successfully!");

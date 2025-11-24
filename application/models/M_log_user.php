@@ -90,7 +90,18 @@ class M_log_user extends CI_Model
 
     public function delete_all_activity()
     {
-        $this->db->empty_table('user_logs'); // Menghapus semua data di tabel log_user
-        return $this->db->affected_rows(); // Mengembalikan jumlah baris yang dihapus
+        // Check if table exists first
+        if (!$this->db->table_exists('user_logs')) {
+            return false;
+        }
+
+        // Get count before deletion for debugging
+        $count_before = $this->db->count_all('user_logs');
+
+        // Delete all records
+        $this->db->empty_table('user_logs');
+
+        // Return the count that was deleted
+        return $count_before;
     }
 }

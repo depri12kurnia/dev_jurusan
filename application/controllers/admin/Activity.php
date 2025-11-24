@@ -88,33 +88,35 @@ class Activity extends CI_Controller
 
     public function delete_all_activity()
     {
-        // Log request untuk debugging
-        log_message('debug', 'Delete all activity called');
-
-        // Validasi CSRF token dari POST data
-        $csrf_token = $this->input->post('csrf_token_jkt3');
-
-        // Untuk debugging, log token yang diterima
-        log_message('debug', 'Received CSRF token: ' . ($csrf_token ? $csrf_token : 'EMPTY'));
-
-        // CodeIgniter otomatis memvalidasi CSRF jika csrf_protection = TRUE
-        // Jika sampai di sini berarti CSRF sudah valid
+        // Set JSON header
+        header('Content-Type: application/json');
 
         try {
-            // Hapus semua activity log
-            $delete = $this->M_log_user->delete_all_activity();
-            log_message('debug', 'Delete result: ' . $delete);
+            // Check table existence first
+            if (!$this->db->table_exists('user_logs')) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Table user_logs does not exist'
+                ]);
+                return;
+            }
 
-            if ($delete !== false) {
+            // Get current count for feedback
+            $current_count = $this->db->count_all('user_logs');
+
+            // Hapus semua activity log
+            $delete_result = $this->M_log_user->delete_all_activity();
+
+            if ($delete_result !== false) {
                 echo json_encode([
                     'status' => 'success',
-                    'message' => 'All activity logs deleted successfully (' . $delete . ' rows affected)',
+                    'message' => 'All activity logs deleted successfully (' . $delete_result . ' rows deleted)',
                     'csrf_token' => $this->security->get_csrf_hash()
                 ]);
             } else {
                 echo json_encode([
                     'status' => 'error',
-                    'message' => 'Failed to delete activity logs'
+                    'message' => 'Failed to delete activity logs - table may not exist or be empty'
                 ]);
             }
         } catch (Exception $e) {
