@@ -1,13 +1,17 @@
 <div class="row">
     <div class="col-12">
-        <div class="card card-info">
+        <div class="card card-primary card-outline">
             <div class="card-header">
-                <h3 class="card-title">Master Data Users</h3>
-                <button class="card-title btn btn-success btn-sm float-right" onclick="add_user()"><i class="fa fa-plus"></i> Add</a></button>
+                <h3 class="card-title"><i class="fas fa-users"></i> Master Data Users</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="add_user()">
+                        <i class="fas fa-plus"></i> Add User
+                    </button>
+                </div>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <table id="table" class="table table-bordered table-hover small">
+                <table id="table" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -44,70 +48,70 @@
 
 <!-- Bootstrap modal -->
 <div class="modal fade" id="modal_form" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">User Form</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></button>
-
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title text-white">User Form</h4>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-body form">
+            <div class="modal-body">
                 <form action="#" id="form" class="form-horizontal">
                     <input type="hidden" value="" name="id" />
                     <div class="form-body">
-                        <div class="form-group">
-                            <label class="control-label col-md-3">Username</label>
-                            <div class="col-md-12">
-                                <input name="username" placeholder="Username" class="form-control" type="text">
-                                <span class="help-block"></span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Username</label>
+                                    <input name="username" placeholder="Username" class="form-control" type="text">
+                                    <span class="help-block text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input name="password" placeholder="Password" class="form-control" type="password">
+                                    <span class="help-block text-danger"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Password</label>
-                            <div class="col-md-12">
-                                <input name="password" placeholder="Password" class="form-control" type="password">
-                                <span class="help-block"></span>
+                            <label>Email</label>
+                            <input name="email" placeholder="Email" class="form-control" type="email">
+                            <span class="help-block text-danger"></span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input name="first_name" placeholder="First Name" class="form-control" type="text">
+                                    <span class="help-block text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input name="last_name" placeholder="Last Name" class="form-control" type="text">
+                                    <span class="help-block text-danger"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Email</label>
-                            <div class="col-md-12">
-                                <input name="email" placeholder="Email" class="form-control" type="text">
-                                <span class="help-block"></span>
-                            </div>
+                            <label>Group</label>
+                            <select name="group_id" class="form-control">
+                                <?php foreach ($groups as $group): ?>
+                                    <option value="<?php echo $group->id; ?>"><?php echo $group->name; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <span class="help-block text-danger"></span>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-3">First Name</label>
-                            <div class="col-md-12">
-                                <input name="first_name" placeholder="First Name" class="form-control" type="text">
-                                <span class="help-block"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-3">Last Name</label>
-                            <div class="col-md-12">
-                                <input name="last_name" placeholder="Last Name" class="form-control" type="text">
-                                <span class="help-block"></span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-3">Group</label>
-                            <div class="col-md-12">
-                                <select name="group_id" class="form-control">
-                                    <?php foreach ($groups as $group): ?>
-                                        <option value="<?php echo $group->id; ?>"><?php echo $group->name; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <span class="help-block"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btnSave">Save</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     </div>
                 </form>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Save</button>
             </div>
         </div>
     </div>

@@ -159,11 +159,24 @@ class M_news extends CI_Model
 
     public function get_authors()
     {
-        $this->db->select('DISTINCT users.id, users.username');
-        $this->db->from($this->table);
-        $this->db->join('users', 'users.id = news.author');
-        $query = $this->db->get();
-        return $query->result();
+        try {
+            $this->db->distinct();
+            $this->db->select('users.id, users.username');
+            $this->db->from($this->table);
+            $this->db->join('users', 'users.id = news.author', 'left');
+            $this->db->where('users.id IS NOT NULL');
+            $this->db->where('news.author IS NOT NULL');
+            $query = $this->db->get();
+
+            if (!$query) {
+                return [];
+            }
+
+            return $query->result();
+        } catch (Exception $e) {
+            log_message('error', 'Exception in get_authors model: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function get_latest_news($limit = 5)

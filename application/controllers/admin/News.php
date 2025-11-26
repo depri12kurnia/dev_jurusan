@@ -35,8 +35,23 @@ class News extends CI_Controller
 
     public function get_authors()
     {
-        $authors = $this->M_news->get_authors();
-        echo json_encode($authors);
+        try {
+            $authors = $this->M_news->get_authors();
+
+            // Always return valid JSON
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode($authors ? $authors : []));
+        } catch (Exception $e) {
+            log_message('error', 'Error in get_authors: ' . $e->getMessage());
+
+            // Return empty array instead of 500 error
+            $this->output
+                ->set_content_type('application/json')
+                ->set_status_header(200)
+                ->set_output(json_encode([]));
+        }
     }
 
     public function preview($id)
