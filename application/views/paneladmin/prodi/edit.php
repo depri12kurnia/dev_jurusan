@@ -74,7 +74,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                                 <select class="form-control" id="jenjang" name="jenjang" required>
                                                     <option value="">Pilih Jenjang</option>
                                                     <option value="D3" <?= set_select('jenjang', 'D3', $prodi->jenjang == 'D3') ?>>D3</option>
-                                                    <option value="D4" <?= set_select('jenjang', 'D4', $prodi->jenjang == 'D4') ?>>D4</option>
+                                                    <option value="Sarjana Terapan" <?= set_select('jenjang', 'Sarjana Terapan', $prodi->jenjang == 'Sarjana Terapan') ?>>Sarjana Terapan</option>
                                                     <option value="Profesi" <?= set_select('jenjang', 'Profesi', $prodi->jenjang == 'Profesi') ?>>Profesi</option>
                                                 </select>
                                             </div>
@@ -471,7 +471,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     case 'D3':
                         gelar = 'A.Md.';
                         break;
-                    case 'D4':
+                    case 'Sarjana Terapan':
                         gelar = 'S.Tr.';
                         break;
                     case 'Profesi':

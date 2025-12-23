@@ -17,15 +17,15 @@ class Home extends CI_Controller
 
 	public function index()
 	{
-		$data['website'] = $this->M_settings->get_all_settings();
-		$data['title'] = 'Selamat Datang di Jurusan Poltekkes Kemenkes Jakarta';
+		$data['website'] = $this->M_settings->get_settings();
+		$data['page_title'] = 'Jurusan';
 
 		// Data Program Studi untuk homepage
 		$data['program_studi_featured'] = $this->M_prodi->get_featured(3); // 3 program studi featured
 		$data['program_studi_all'] = $this->M_prodi->get_all_active(); // Semua program studi aktif
 		$data['program_studi_by_jenjang'] = [
 			'D3' => $this->M_prodi->get_by_jenjang('D3', 5),
-			'S1' => $this->M_prodi->get_by_jenjang('S1', 5),
+			'Sarjana Terapan' => $this->M_prodi->get_by_jenjang('Sarjana Terapan', 5),
 			'PROFESI' => $this->M_prodi->get_by_jenjang('PROFESI', 5)
 		];
 
@@ -57,7 +57,7 @@ class Home extends CI_Controller
 	{
 		if (!$slug) {
 			// Tampilkan daftar semua program studi
-			$data['website'] = $this->M_settings->get_all_settings();
+			$data['website'] = $this->M_settings->get_settings();
 			$data['title'] = 'Program Studi - Fakultas Kesehatan';
 			$data['program_studi_all'] = $this->M_prodi->get_all_active();
 			$data['program_studi_by_jenjang'] = [
@@ -75,7 +75,7 @@ class Home extends CI_Controller
 				show_404();
 			}
 
-			$data['website'] = $this->M_settings->get_all_settings();
+			$data['website'] = $this->M_settings->get_settings();
 			$data['title'] = $prodi->nama_prodi . ' - Fakultas Kesehatan';
 			$data['prodi'] = $prodi;
 			$data['related_prodi'] = $this->M_prodi->get_related($prodi->jenjang, $prodi->id, 3);

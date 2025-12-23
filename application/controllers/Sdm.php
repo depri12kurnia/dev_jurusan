@@ -7,12 +7,18 @@ class Sdm extends CI_Controller
     {
         parent::__construct();
         $this->load->model(['M_sdm']);
+        $this->load->model(['M_prodi']);
+        $this->load->model('M_settings');
         $this->load->helper(['url', 'text', 'form', 'date']);
         $this->load->library('user_agent');
     }
 
     public function index()
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
+
         $data['title'] = 'Sumber Daya Manusia';
         $data['dosen'] = $this->M_sdm->get_all_dosen();
         $data['staf'] = $this->M_sdm->get_all_staf();
@@ -44,6 +50,10 @@ class Sdm extends CI_Controller
 
     public function detail_dosen($id)
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
+
         $data['title'] = 'Detail Dosen';
         $data['dosen'] = $this->M_sdm->get_dosen_by_id($id);
 
@@ -57,6 +67,10 @@ class Sdm extends CI_Controller
 
     public function detail_staf($id)
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
+
         $data['title'] = 'Detail Staf';
         $data['staf'] = $this->M_sdm->get_staf_by_id($id);
 

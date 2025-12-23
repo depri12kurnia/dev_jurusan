@@ -7,9 +7,10 @@ class Program_studi extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('M_prodi', 'm_prodi');
-        $this->load->model('M_prodi_frontend', 'm_prodi_frontend');
+        $this->load->model('M_prodi');
+        $this->load->model('M_prodi_frontend', 'M_prodi_frontend');
         $this->load->helper(['url', 'text']);
+        $this->load->model('M_settings');
     }
 
     /**
@@ -17,13 +18,14 @@ class Program_studi extends CI_Controller
      */
     public function index()
     {
+
         // Load data dengan limit untuk performa lebih baik - minimal query untuk load awal
-        $prodi_list = $this->m_prodi->get_public_list(8); // Kurangi limit untuk load lebih cepat
-        $stats = $this->m_prodi->get_public_statistics();
+        $prodi_list = $this->M_prodi->get_public_list(8); // Kurangi limit untuk load lebih cepat
+        $stats = $this->M_prodi->get_public_statistics();
 
         // Load data tambahan
-        $prodi_featured = $this->m_prodi->get_featured_programs(6); // Load program unggulan
-        $jenjang_list = $this->m_prodi->get_jenjang_list(); // Get dari database dengan count
+        $prodi_featured = $this->M_prodi->get_featured_programs(6); // Load program unggulan
+        $jenjang_list = $this->M_prodi->get_jenjang_list(); // Get dari database dengan count
 
         $data = array(
             'title' => 'Program Studi',
@@ -33,8 +35,10 @@ class Program_studi extends CI_Controller
             'prodi_featured' => $prodi_featured,
             'stats' => $stats,
             'jenjang_list' => $jenjang_list,
-            'program_studi_all' => $this->m_prodi->get_all_active() // Untuk navbar
+            'program_studi_all' => $this->M_prodi->get_all_active() // Untuk navbar
         );
+        $data['website'] = $this->M_settings->get_settings();
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
 
         $data['content'] = 'paneluser/program_studi/index';
         $this->load->view('layouts/user_layout', $data);
@@ -45,21 +49,22 @@ class Program_studi extends CI_Controller
      */
     public function detail($slug = '')
     {
+
         if (empty($slug)) {
             show_404();
         }
 
-        $prodi = $this->m_prodi->get_by_slug($slug);
+        $prodi = $this->M_prodi->get_by_slug($slug);
 
         if (!$prodi) {
             show_404();
         }
 
         // Update view count (optional)
-        $this->m_prodi->increment_view_count($prodi->id);
+        $this->M_prodi->increment_view_count($prodi->id);
 
         // Get related programs (same jenjang, exclude current)
-        $related_programs = $this->m_prodi->get_related_programs($prodi->jenjang, $prodi->id, 4);
+        $related_programs = $this->M_prodi->get_related_programs($prodi->jenjang, $prodi->id, 4);
 
         $data = array(
             'title' => $prodi->nama_prodi,
@@ -72,7 +77,8 @@ class Program_studi extends CI_Controller
                 $prodi->nama_prodi => ''
             )
         );
-
+        $data['website'] = $this->M_settings->get_settings();
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
         $data['content'] = 'paneluser/program_studi/detail';
         $this->load->view('layouts/user_layout', $data);
     }
@@ -97,7 +103,7 @@ class Program_studi extends CI_Controller
         $jenjang_lower = strtolower($jenjang);
         $db_jenjang = isset($jenjang_mapping[$jenjang_lower]) ? $jenjang_mapping[$jenjang_lower] : strtoupper($jenjang);
 
-        $valid_jenjang = ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3', 'PROFESI'];
+        $valid_jenjang = ['D1', 'D2', 'D3', 'Sarjana Terapan', 'S1', 'S2', 'S3', 'PROFESI'];
 
         if (!in_array($db_jenjang, $valid_jenjang)) {
             show_404();
@@ -115,8 +121,8 @@ class Program_studi extends CI_Controller
             'offset' => 0
         );
 
-        $programs = $this->m_prodi_frontend->get_by_jenjang_filtered($db_jenjang, $filters);
-        $stats = $this->m_prodi_frontend->get_jenjang_stats($db_jenjang);
+        $programs = $this->M_prodi_frontend->get_by_jenjang_filtered($db_jenjang, $filters);
+        $stats = $this->M_prodi_frontend->get_jenjang_stats($db_jenjang);
 
         // Check if there are more programs
         $total_programs = $stats['total_programs'];
@@ -142,7 +148,7 @@ class Program_studi extends CI_Controller
             'stats' => $stats,
             'total_programs' => $total_programs,
             'has_more_programs' => $has_more,
-            'all_jenjang' => $this->m_prodi->get_jenjang_list(),
+            'all_jenjang' => $this->M_prodi->get_jenjang_list(),
             'breadcrumb' => array(
                 'Program Studi' => site_url('program-studi'),
                 'Jenjang ' . $db_jenjang => ''
@@ -165,7 +171,7 @@ class Program_studi extends CI_Controller
             redirect('program-studi');
         }
 
-        $results = $this->m_prodi->search_public($keyword, $jenjang);
+        $results = $this->M_prodi->search_public($keyword, $jenjang);
 
         $data = array(
             'title' => 'Pencarian Program Studi',
@@ -174,7 +180,7 @@ class Program_studi extends CI_Controller
             'jenjang_filter' => $jenjang,
             'results' => $results,
             'total_results' => count($results),
-            'jenjang_list' => $this->m_prodi->get_jenjang_list(),
+            'jenjang_list' => $this->M_prodi->get_jenjang_list(),
             'breadcrumb' => array(
                 'Program Studi' => site_url('program-studi'),
                 'Pencarian' => ''
@@ -199,8 +205,8 @@ class Program_studi extends CI_Controller
         $limit = (int) $this->input->post('limit') ?: 12;
         $offset = (int) $this->input->post('offset') ?: 0;
 
-        $programs = $this->m_prodi->get_filtered_programs($jenjang, $keyword, $limit, $offset);
-        $total = $this->m_prodi->count_filtered_programs($jenjang, $keyword);
+        $programs = $this->M_prodi->get_filtered_programs($jenjang, $keyword, $limit, $offset);
+        $total = $this->M_prodi->count_filtered_programs($jenjang, $keyword);
 
         $response = array(
             'status' => 'success',
@@ -223,7 +229,7 @@ class Program_studi extends CI_Controller
             'title' => 'Program Studi Unggulan',
             'meta_description' => 'Program Studi Unggulan yang menjadi kebanggaan institusi',
             'meta_keywords' => 'program unggulan, program favorit, program studi terbaik',
-            'prodi_featured' => $this->m_prodi->get_featured_programs(),
+            'prodi_featured' => $this->M_prodi->get_featured_programs(),
             'breadcrumb' => array(
                 'Program Studi' => site_url('program-studi'),
                 'Program Unggulan' => ''
@@ -246,7 +252,7 @@ class Program_studi extends CI_Controller
         $offset = (int) $this->input->post('offset') ?: 0;
         $limit = (int) $this->input->post('limit') ?: 8;
 
-        $programs = $this->m_prodi->get_public_list($limit, $offset);
+        $programs = $this->M_prodi->get_public_list($limit, $offset);
 
         $response = array(
             'status' => 'success',

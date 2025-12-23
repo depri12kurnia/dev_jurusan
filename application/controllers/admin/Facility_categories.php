@@ -84,9 +84,7 @@ class Facility_categories extends CI_Controller
             'color'       => $this->input->post('color'),
             'icon'        => $this->input->post('icon'),
             'sort_order'  => $this->input->post('sort_order') ?: 0,
-            'status'      => $this->input->post('status'),
-            'created_by'  => $user->id,
-            'updated_by'  => $user->id
+            'status'      => $this->input->post('status')
         );
 
         $this->M_facilities->insert_category($data);
@@ -120,7 +118,6 @@ class Facility_categories extends CI_Controller
             'icon'        => $this->input->post('icon'),
             'sort_order'  => $this->input->post('sort_order') ?: 0,
             'status'      => $this->input->post('status'),
-            'updated_by'  => $user->id
         );
 
         $this->M_facilities->update_category($id, $data);

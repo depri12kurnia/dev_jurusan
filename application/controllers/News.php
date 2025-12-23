@@ -6,8 +6,9 @@ class News extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model(['M_news', 'M_settings']);
-        $this->load->model('M_prodi', 'm_prodi'); // For navbar compatibility
+        $this->load->model('M_news');
+        $this->load->model('M_settings');
+        $this->load->model('M_prodi'); // For navbar compatibility
         $this->load->library(['pagination']);
         $this->load->helper(['url', 'text', 'form', 'date']);
     }
@@ -70,12 +71,13 @@ class News extends CI_Controller
         $data['latest_news'] = $this->M_news->get_latest_news(5);
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
+
         $data['title'] = 'Berita & Kegiatan';
         $data['meta_description'] = 'Update terbaru seputar kegiatan akademik, praktik klinik, dan prestasi mahasiswa';
 
         // Data untuk navbar
-        $data['program_studi_all'] = $this->m_prodi->get_all_active(10);
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
 
         $data['content'] = 'paneluser/news/index';
         $this->load->view('layouts/user_layout', $data);
@@ -107,12 +109,12 @@ class News extends CI_Controller
         $data['popular_news'] = $this->M_news->get_popular_news(5);
 
         $data['news'] = $news;
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = $news->title;
         $data['meta_description'] = !empty($news->excerpt) ? character_limiter($news->excerpt, 160) : character_limiter(strip_tags($news->content), 160);
 
         // Data untuk navbar
-        $data['program_studi_all'] = $this->m_prodi->get_all_active(10);
+        $data['program_studi_all'] = $this->M_prodi->get_all_active(10);
 
         $data['content'] = 'paneluser/news/detail';
         $this->load->view('layouts/user_layout', $data);
@@ -185,12 +187,12 @@ class News extends CI_Controller
         $data['popular_news'] = $this->M_news->get_popular_news(5);
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = 'Berita ' . $category->name;
         $data['meta_description'] = 'Berita dan kegiatan terkait ' . $category->name;
 
         // Data untuk navbar
-        $data['program_studi_all'] = $this->m_prodi->get_all_active(10);
+        $data['program_studi_all'] = $this->M_prodi->get_all_active(10);
 
         $data['content'] = 'paneluser/news/category';
         $this->load->view('layouts/user_layout', $data);
@@ -258,12 +260,12 @@ class News extends CI_Controller
         $data['popular_news'] = $this->M_news->get_popular_news(5);
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = 'Pencarian: ' . $keyword;
         $data['meta_description'] = 'Hasil pencarian berita untuk: ' . $keyword;
 
         // Data untuk navbar
-        $data['program_studi_all'] = $this->m_prodi->get_all_active(10);
+        $data['program_studi_all'] = $this->M_prodi->get_all_active(10);
 
         $data['content'] = 'paneluser/news/search';
         $this->load->view('layouts/user_layout', $data);

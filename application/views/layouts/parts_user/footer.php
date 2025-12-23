@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-3 col-md-6">
-                <h5>Jurusan</h5>
+                <h5>Jurusan <?= htmlspecialchars($website->name) ?></h5>
                 <p>Membangun generasi tenaga kesehatan profesional dengan dedikasi tinggi untuk melayani masyarakat.</p>
                 <div class="d-flex gap-3">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>

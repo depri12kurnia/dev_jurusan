@@ -8,6 +8,7 @@ class Akademik extends CI_Controller
         parent::__construct();
         $this->load->model('M_menu_items');
         $this->load->model('M_settings');
+        $this->load->model('M_prodi');
     }
 
     /**
@@ -35,6 +36,8 @@ class Akademik extends CI_Controller
 
         // Load academic menu for navbar
         $data['academic_menu'] = $this->M_menu_items->get_by_category_slug('akademik');
+        $data['website'] = $this->M_settings->get_settings();
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
 
         // Load the view
         $data['content'] = 'pages/academic_detail';

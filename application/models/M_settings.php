@@ -14,6 +14,12 @@ class M_settings extends CI_Model
      * Get all settings
      * @return array
      */
+
+    public function get_settings()
+    {
+        return $this->db->get($this->table)->row();
+    }
+
     public function get_all_settings()
     {
         $this->db->order_by('id', 'ASC');

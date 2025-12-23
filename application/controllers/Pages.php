@@ -9,6 +9,7 @@ class Pages extends CI_Controller
         $this->load->model('M_settings');
         $this->load->model('M_menu_items');
         $this->load->model('M_menu_categories');
+        $this->load->model('M_prodi');
     }
 
     /**
@@ -16,6 +17,9 @@ class Pages extends CI_Controller
      */
     public function show($slug)
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
         $page = $this->M_menu_items->get_by_slug($slug);
 
         if (!$page) {
@@ -46,6 +50,8 @@ class Pages extends CI_Controller
      */
     public function category($category_slug)
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
         $category = $this->M_menu_categories->get_by_slug($category_slug);
 
         if (!$category) {

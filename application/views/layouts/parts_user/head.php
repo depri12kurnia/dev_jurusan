@@ -1,6 +1,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?php echo $title; ?></title>
+
+<title>
+    <?= htmlspecialchars($page_title ?? $website->name) ?> |
+    <?= htmlspecialchars($website->name) ?>
+</title>
+<!-- <meta name="description" content="<?= htmlspecialchars($meta_description ?? 'Deskripsi website') ?>"> -->
+
 <!-- Preload critical resources -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">

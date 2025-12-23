@@ -106,8 +106,8 @@
                                         <i class="<?= isset($prodi->icon) ? $prodi->icon : 'fas fa-graduation-cap' ?> me-2"
                                             style="color: <?= isset($prodi->warna) ? $prodi->warna : '#00B9AD' ?>;"></i>
                                         <?= $prodi->jenjang ?> <?= $prodi->nama_prodi ?>
-                                        <?php if (isset($prodi->akreditasi) && $prodi->akreditasi == 'A'): ?>
-                                            <span class="badge bg-success ms-1" style="font-size: 0.6em;">A</span>
+                                        <?php if (isset($prodi->akreditasi) && $prodi->akreditasi == 'Unggul'): ?>
+                                            <span class="badge bg-success ms-1" style="font-size: 0.6em;">Unggul</span>
                                         <?php endif; ?>
                                     </a>
                                 </li>

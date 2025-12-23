@@ -115,7 +115,7 @@ class Auth extends CI_Controller
 			];
 
 			// $this->_render_page('auth' . DIRECTORY_SEPARATOR . 'login', $this->data);
-			$data['website'] = $this->M_settings->get_all_settings();
+			$data['website'] = $this->M_settings->get_settings();
 			$data['title'] = 'Sign In';
 			$data['content'] = 'auth/login';
 			$this->load->view(
@@ -204,7 +204,7 @@ class Auth extends CI_Controller
 			// set any errors and display the form
 			// $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 			// $this->_render_page('auth' . DIRECTORY_SEPARATOR . 'forgot_password', $this->data);
-			$data['website'] = $this->M_settings->get_all_settings();
+			$data['website'] = $this->M_settings->get_settings();
 			$data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 			$data['title'] = 'Forgot Password';
 			$data['content'] = 'auth/forgot_password';
@@ -794,7 +794,7 @@ class Auth extends CI_Controller
 
 	public function register()
 	{
-		$data['website'] = $this->M_settings->get_all_settings();
+		$data['website'] = $this->M_settings->get_settings();
 		$data['title'] = 'Registration Page';
 		$data['content'] = 'auth/register';
 		$this->load->view('layouts/userlte3', $data);

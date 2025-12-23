@@ -8,6 +8,7 @@ class Kemahasiswaan extends CI_Controller
         parent::__construct();
         $this->load->model('M_menu_items');
         $this->load->model('M_settings');
+        $this->load->model('M_prodi');
     }
 
     /**
@@ -15,6 +16,10 @@ class Kemahasiswaan extends CI_Controller
      */
     public function index($slug = null)
     {
+        $data['website'] = $this->M_settings->get_settings();
+        $data['page_title'] = 'Jurusan';
+        $data['program_studi_all'] = $this->M_prodi->get_all_active();
+
         if (!$slug) {
             // If no slug provided, show academic overview or redirect
             redirect('/');

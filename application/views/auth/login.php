@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Sistem Jurusan</title>
+  <title>
+    <?= htmlspecialchars($page_title ?? $website->name) ?> |
+    <?= htmlspecialchars($website->name) ?>
+  </title>
   <!-- Bootstrap 5.3.0 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome 6 -->
@@ -174,7 +177,7 @@
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
-        <h2><i class="fas fa-graduation-cap me-2"></i>Website Jurusan</h2>
+        <h2><i class="fas fa-graduation-cap me-2"></i>Jurusan <?= htmlspecialchars($website->name) ?></h2>
         <p>Silakan masuk ke akun Anda</p>
       </div>
       <div class="login-body">

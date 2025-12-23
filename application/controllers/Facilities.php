@@ -73,7 +73,7 @@ class Facilities extends CI_Controller
         $data['featured_facilities'] = $this->M_facilities->get_featured_facilities(5);
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = 'Fasilitas & Sarana';
         $data['meta_description'] = 'Fasilitas lengkap dan modern untuk mendukung proses pembelajaran dan praktik mahasiswa';
 
@@ -114,7 +114,7 @@ class Facilities extends CI_Controller
         $data['featured_facilities'] = $this->M_facilities->get_featured_facilities(5);
 
         $data['facility'] = $facility;
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = $facility->title;
         $data['meta_description'] = !empty($facility->description) ? character_limiter($facility->description, 160) : character_limiter(strip_tags($facility->content), 160);
 
@@ -209,7 +209,7 @@ class Facilities extends CI_Controller
         $data['featured_facilities'] = $this->M_facilities->get_featured_facilities(5);
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = 'Fasilitas ' . $category->name;
         $data['meta_description'] = 'Fasilitas dan sarana terkait ' . $category->name;
 
@@ -283,7 +283,7 @@ class Facilities extends CI_Controller
         $data['categories'] = $this->M_facilities->get_categories();
 
         // Website settings
-        $data['website'] = $this->M_settings->get_all_settings();
+        $data['website'] = $this->M_settings->get_settings();
         $data['title'] = 'Pencarian Fasilitas: ' . $keyword;
         $data['meta_description'] = 'Hasil pencarian fasilitas untuk kata kunci: ' . $keyword;
 
