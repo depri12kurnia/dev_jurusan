@@ -1,7 +1,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="<?= site_url() ?>">
+        <!-- <a class="navbar-brand" href="<?= site_url() ?>">
             <?php
             // Ambil logo dan nama dari model
             $CI = &get_instance();
@@ -21,7 +21,7 @@
                 echo '<span class="brand-text fw-bold">Website</span>';
             }
             ?>
-        </a>
+        </a> -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -60,8 +60,14 @@
                             <?php endforeach; ?>
                             <li>
                                 <a class="dropdown-item" href="<?= site_url('sdm') ?>">
-                                    <i class="fas fa-info-circle"></i>
+                                    <i class="fas fa-user"></i>
                                     Sumber Daya Manusia
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="<?= site_url('Downloads') ?>">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Akreditasi
                                 </a>
                             </li>
                         </ul>
@@ -105,7 +111,7 @@
                                     <a class="dropdown-item" href="<?= site_url('program-studi/' . $prodi->slug) ?>">
                                         <i class="<?= isset($prodi->icon) ? $prodi->icon : 'fas fa-graduation-cap' ?> me-2"
                                             style="color: <?= isset($prodi->warna) ? $prodi->warna : '#00B9AD' ?>;"></i>
-                                        <?= $prodi->jenjang ?> <?= $prodi->nama_prodi ?>
+                                        <?= $prodi->nama_prodi ?>
                                         <?php if (isset($prodi->akreditasi) && $prodi->akreditasi == 'Unggul'): ?>
                                             <span class="badge bg-success ms-1" style="font-size: 0.6em;">Unggul</span>
                                         <?php endif; ?>
@@ -121,9 +127,55 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item" href="<?= site_url('program-studi') ?>"><i class="fas fa-list me-2"></i>Semua Program Studi</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-info-circle me-2"></i>Info Pendaftaran</a></li>
+                        <li><a class="dropdown-item" href="https://sipenmaru.poltekkesjakarta3.ac.id" target="_blank"><i class="fas fa-info-circle me-2"></i>Info Pendaftaran</a></li>
                     </ul>
                 </li>
+                <!-- Penelitian -->
+                <?php
+                // Load tentang menu items dynamically
+                if (!isset($penelitian_menu) || empty($penelitian_menu)) {
+                    $CI = &get_instance();
+                    if (!isset($CI->m_menu_items)) {
+                        $CI->load->model('M_menu_items', 'm_menu_items');
+                    }
+                    $penelitian_menu = $CI->m_menu_items->get_by_category_slug('penelitian-pengabmas');
+                }
+                ?>
+
+                <?php if (!empty($penelitian_menu) && count($penelitian_menu) > 1): ?>
+                    <!-- Multiple penelitian items - show as dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="penelitianDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-info-circle me-1"></i>Penelitian & Pengabmas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="penelitianDropdown">
+                            <?php foreach ($penelitian_menu as $item): ?>
+                                <li>
+                                    <a class="dropdown-item" href="<?= site_url('penelitian/' . $item->slug) ?>">
+                                        <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-info-circle' ?> me-2"></i>
+                                        <?= htmlspecialchars($item->title) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                <?php elseif (!empty($penelitian_menu) && count($penelitian_menu) == 1): ?>
+                    <!-- Single penelitian item - direct link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('penelitian/' . $penelitian_menu[0]->slug) ?>">
+                            <i class="<?= !empty($penelitian_menu[0]->icon) ? $penelitian_menu[0]->icon : 'fas fa-info-circle' ?> me-1"></i>
+                            <?= htmlspecialchars($penelitian_menu[0]->title) ?>
+                        </a>
+                    </li>
+                <?php else: ?>
+                    <!-- Fallback static link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">
+                            <i class="fas fa-info-circle me-1"></i>Kosong
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <!-- End Penelitian -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#features" id="facilitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-building me-1"></i>Fasilitas

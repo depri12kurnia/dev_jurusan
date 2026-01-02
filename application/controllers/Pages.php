@@ -32,14 +32,14 @@ class Pages extends CI_Controller
 
         // Page data
         $data['page'] = $page;
-        $data['title'] = $page->meta_title ?: $page->title;
+        $data['page_title'] = $page->meta_title ?: $page->title;
         $data['meta_description'] = $page->meta_description;
 
         // Breadcrumb
         $data['breadcrumb'] = [
-            ['title' => 'Home', 'url' => base_url()],
-            ['title' => $page->category_name, 'url' => '#'],
-            ['title' => $page->title, 'url' => '']
+            ['page_title' => 'Home', 'url' => base_url()],
+            ['page_title' => $page->category_name, 'url' => '#'],
+            ['page_title' => $page->title, 'url' => '']
         ];
 
         $this->load->view('frontend/page', $data);
@@ -67,13 +67,13 @@ class Pages extends CI_Controller
         // Category data
         $data['category'] = $category;
         $data['items'] = $items;
-        $data['title'] = $category->name;
+        $data['page_title'] = $category->name;
         $data['meta_description'] = 'Daftar halaman dalam kategori ' . $category->name;
 
         // Breadcrumb
         $data['breadcrumb'] = [
-            ['title' => 'Home', 'url' => base_url()],
-            ['title' => $category->name, 'url' => '']
+            ['page_title' => 'Home', 'url' => base_url()],
+            ['page_title' => $category->name, 'url' => '']
         ];
 
         $this->load->view('frontend/category', $data);
@@ -100,13 +100,13 @@ class Pages extends CI_Controller
         $data['keyword'] = $keyword;
         $data['results'] = $results;
         $data['total_results'] = count($results);
-        $data['title'] = 'Hasil Pencarian: ' . $keyword;
+        $data['page_title'] = 'Hasil Pencarian: ' . $keyword;
         $data['meta_description'] = 'Hasil pencarian untuk kata kunci: ' . $keyword;
 
         // Breadcrumb
         $data['breadcrumb'] = [
-            ['title' => 'Home', 'url' => base_url()],
-            ['title' => 'Pencarian', 'url' => '']
+            ['page_title' => 'Home', 'url' => base_url()],
+            ['page_title' => 'Pencarian', 'url' => '']
         ];
 
         $this->load->view('frontend/search', $data);

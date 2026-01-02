@@ -18,7 +18,7 @@ class Home extends CI_Controller
 	public function index()
 	{
 		$data['website'] = $this->M_settings->get_settings();
-		$data['page_title'] = 'Jurusan';
+		$data['page_title'] = 'Home';
 
 		// Data Program Studi untuk homepage
 		$data['program_studi_featured'] = $this->M_prodi->get_featured(3); // 3 program studi featured

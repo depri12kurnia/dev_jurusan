@@ -74,7 +74,7 @@ class Facilities extends CI_Controller
 
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = 'Fasilitas & Sarana';
+        $data['page_title'] = 'Fasilitas & Sarana';
         $data['meta_description'] = 'Fasilitas lengkap dan modern untuk mendukung proses pembelajaran dan praktik mahasiswa';
 
         // Data untuk navbar
@@ -115,7 +115,7 @@ class Facilities extends CI_Controller
 
         $data['facility'] = $facility;
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = $facility->title;
+        $data['page_title'] = $facility->title;
         $data['meta_description'] = !empty($facility->description) ? character_limiter($facility->description, 160) : character_limiter(strip_tags($facility->content), 160);
 
         // Data untuk navbar
@@ -210,7 +210,7 @@ class Facilities extends CI_Controller
 
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = 'Fasilitas ' . $category->name;
+        $data['page_title'] = 'Fasilitas ' . $category->name;
         $data['meta_description'] = 'Fasilitas dan sarana terkait ' . $category->name;
 
         // Data untuk navbar
@@ -284,7 +284,7 @@ class Facilities extends CI_Controller
 
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = 'Pencarian Fasilitas: ' . $keyword;
+        $data['page_title'] = 'Pencarian Fasilitas: ' . $keyword;
         $data['meta_description'] = 'Hasil pencarian fasilitas untuk kata kunci: ' . $keyword;
 
         // Data untuk navbar

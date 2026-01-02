@@ -34,7 +34,7 @@ class Kemahasiswaan extends CI_Controller
 
         // Load data for the view
         $data['item'] = $item;
-        $data['title'] = $item->title . ' | ' . ($this->M_settings->get_main_settings()->name ?? 'Website');
+        $data['page_title'] = $item->title . ' | ' . ($this->M_settings->get_main_settings()->name ?? 'Website');
         $data['meta_title'] = $item->meta_title ?: $item->title;
         $data['meta_description'] = $item->meta_description ?: strip_tags(substr($item->content, 0, 160));
 

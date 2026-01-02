@@ -264,7 +264,7 @@
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold mb-3" data-aos="fade-up">
                     <i class="fas fa-newspaper me-3"></i>
-                    <?= $title ?>
+                    <?= $page_title ?>
                 </h1>
                 <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
                     <?= $meta_description ?>

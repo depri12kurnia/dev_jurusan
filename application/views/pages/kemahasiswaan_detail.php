@@ -8,7 +8,7 @@
                     <?= htmlspecialchars($item->title) ?>
                 </h1>
                 <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
-                    Informasi lengkap mengenai sistem akademik dan kebijakan pendidikan di Fakultas Kesehatan
+                    Informasi lengkap mengenai sistem akademik dan kebijakan pendidikan di Jurusan <?= htmlspecialchars($website->name) ?>
                 </p>
                 <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
                     <span class="badge bg-white text-primary px-3 py-2">

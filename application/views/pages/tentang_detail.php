@@ -8,7 +8,7 @@
                     <?= htmlspecialchars($item->title) ?>
                 </h1>
                 <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
-                    Mengenal lebih dekat Fakultas Kesehatan, visi misi, sejarah, dan komitmen kami dalam pendidikan kesehatan
+                    Mengenal lebih dekat Jurusan <?= htmlspecialchars($website->name) ?>, visi misi, sejarah, dan komitmen kami dalam pendidikan kesehatan
                 </p>
                 <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
                     <span class="badge bg-white text-info px-3 py-2">

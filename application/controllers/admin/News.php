@@ -280,8 +280,8 @@ class News extends CI_Controller
     private function _upload_thumbnail($old_thumbnail = null)
     {
         $config['upload_path']   = './public/uploads/news/';
-        $config['allowed_types'] = 'jpg|jpeg|png|gif';
-        $config['max_size']      = 2048; // Maksimum 2MB
+        $config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
+        $config['max_size']      = 4096; // Maksimum 4MB
         $config['file_name']     = time() . '_' . $_FILES['thumbnail']['name'];
 
         $this->upload->initialize($config);
@@ -290,7 +290,7 @@ class News extends CI_Controller
             $upload_data = $this->upload->data();
 
             // Tentukan batas ukuran (misal: 800x800px)
-            $max_width  = 800;
+            $max_width  = 1280;
             $max_height = 800;
 
             // Resize jika lebih besar dari batasan

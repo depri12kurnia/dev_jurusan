@@ -73,7 +73,7 @@ class News extends CI_Controller
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
 
-        $data['title'] = 'Berita & Kegiatan';
+        $data['page_title'] = 'Berita & Kegiatan';
         $data['meta_description'] = 'Update terbaru seputar kegiatan akademik, praktik klinik, dan prestasi mahasiswa';
 
         // Data untuk navbar
@@ -110,7 +110,7 @@ class News extends CI_Controller
 
         $data['news'] = $news;
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = $news->title;
+        $data['page_title'] = $news->title;
         $data['meta_description'] = !empty($news->excerpt) ? character_limiter($news->excerpt, 160) : character_limiter(strip_tags($news->content), 160);
 
         // Data untuk navbar
@@ -188,7 +188,7 @@ class News extends CI_Controller
 
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = 'Berita ' . $category->name;
+        $data['page_title'] = 'Berita ' . $category->name;
         $data['meta_description'] = 'Berita dan kegiatan terkait ' . $category->name;
 
         // Data untuk navbar
@@ -261,7 +261,7 @@ class News extends CI_Controller
 
         // Website settings
         $data['website'] = $this->M_settings->get_settings();
-        $data['title'] = 'Pencarian: ' . $keyword;
+        $data['page_title'] = 'Pencarian: ' . $keyword;
         $data['meta_description'] = 'Hasil pencarian berita untuk: ' . $keyword;
 
         // Data untuk navbar

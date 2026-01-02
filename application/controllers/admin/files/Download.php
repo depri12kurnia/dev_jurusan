@@ -226,7 +226,7 @@ class Download extends CI_Controller
 
         $config['upload_path']   = './public/uploads/files/';
         $config['allowed_types'] = 'pdf';
-        $config['max_size']      = 5120; // Maksimum 5MB (5120 KB)
+        $config['max_size']      = 8000; // Maksimum 8MB (8192 KB)
         $config['max_width']     = 0; // No limit for PDF
         $config['max_height']    = 0; // No limit for PDF
         $config['file_name']     = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $_FILES['filesname']['name']);

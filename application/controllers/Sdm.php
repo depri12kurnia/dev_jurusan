@@ -16,10 +16,9 @@ class Sdm extends CI_Controller
     public function index()
     {
         $data['website'] = $this->M_settings->get_settings();
-        $data['page_title'] = 'Jurusan';
         $data['program_studi_all'] = $this->M_prodi->get_all_active();
 
-        $data['title'] = 'Sumber Daya Manusia';
+        $data['page_title'] = 'Sumber Daya Manusia';
         $data['dosen'] = $this->M_sdm->get_all_dosen();
         $data['staf'] = $this->M_sdm->get_all_staf();
         $data['statistics'] = $this->M_sdm->get_sdm_statistics();

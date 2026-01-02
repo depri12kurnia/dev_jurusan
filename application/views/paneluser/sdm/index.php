@@ -7,7 +7,7 @@
                     <?= isset($title) ? $title : 'Sumber Daya Manusia' ?>
                 </h1>
                 <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
-                    Informasi lengkap tentang dosen dan staf yang mendukung kegiatan akademik dan operasional fakultas.
+                    Informasi lengkap tentang dosen dan staf yang mendukung kegiatan akademik dan operasional Jurusan <?= htmlspecialchars($website->name) ?>.
                 </p>
             </div>
             <div class="col-lg-4 text-end">
@@ -43,12 +43,12 @@
                         <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="dosen-tab" data-toggle="tab" href="#dosen" role="tab" aria-controls="dosen" aria-selected="true">
-                                    <i class="fas fa-chalkboard-teacher mr-2"></i>Data Dosen
+                                    <i class="fas fa-chalkboard-teacher mr-2"></i> Data Dosen
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="staf-tab" data-toggle="tab" href="#staf" role="tab" aria-controls="staf" aria-selected="false">
-                                    <i class="fas fa-users mr-2"></i>Data Staf
+                                    <i class="fas fa-users mr-2"></i> Data Staf
                                 </a>
                             </li>
                         </ul>

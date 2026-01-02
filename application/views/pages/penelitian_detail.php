@@ -4,26 +4,26 @@
         <div class="row align-items-center">
             <div class="col-lg-8 mx-auto text-center">
                 <h1 class="display-4 fw-bold mb-4" data-aos="fade-up">
-                    <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-university' ?> me-3"></i>
+                    <i class="<?= !empty($item->icon) ? $item->icon : 'fas fa-info-circle' ?> me-3"></i>
                     <?= htmlspecialchars($item->title) ?>
                 </h1>
                 <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
-                    Informasi lengkap mengenai sistem akademik dan kebijakan pendidikan di Jurusan <?= htmlspecialchars($website->name) ?>
+                    Mengenal lebih dekat Jurusan <?= htmlspecialchars($website->name) ?>, visi misi, sejarah, dan komitmen kami dalam pendidikan kesehatan
                 </p>
                 <div class="d-flex justify-content-center gap-3" data-aos="fade-up" data-aos-delay="200">
-                    <span class="badge bg-white text-primary px-3 py-2">
+                    <span class="badge bg-white text-info px-3 py-2">
                         <i class="fas fa-calendar-alt me-2"></i>
                         <?= date('d M Y', strtotime($item->created_at ?? date('Y-m-d'))) ?>
                     </span>
-                    <span class="badge bg-white text-primary px-3 py-2">
-                        <i class="fas fa-graduation-cap me-2"></i>Akademik
+                    <span class="badge bg-white text-info px-3 py-2">
+                        <i class="fas fa-info-circle me-2"></i>Penelitian & Pengabmas
                     </span>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Academic Content Page -->
+<!-- Tentang (About) Content Page -->
 <div class="container my-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
@@ -43,21 +43,21 @@
                 </div>
             </div>
 
-            <!-- Navigation to other academic pages -->
-            <?php if (!empty($academic_menu) && count($academic_menu) > 1): ?>
+            <!-- Navigation to other penelitian pages -->
+            <?php if (!empty($penelitian_menu) && count($penelitian_menu) > 1): ?>
                 <div class="mt-5">
-                    <h4 class="mb-3">Halaman Akademik Lainnya</h4>
+                    <h4 class="mb-3">Penelitian & Pengabmas</h4>
                     <div class="row">
-                        <?php foreach ($academic_menu as $menu_item): ?>
+                        <?php foreach ($penelitian_menu as $menu_item): ?>
                             <?php if ($menu_item->slug !== $item->slug): // Don't show current page 
                             ?>
                                 <div class="col-md-6 mb-3">
-                                    <a href="<?= site_url('akademik/' . $menu_item->slug) ?>"
+                                    <a href="<?= site_url('tentang/' . $menu_item->slug) ?>"
                                         class="card text-decoration-none h-100 shadow-sm border-0 hover-card">
                                         <div class="card-body d-flex align-items-center">
                                             <div class="me-3">
-                                                <i class="<?= !empty($menu_item->icon) ? $menu_item->icon : 'fas fa-file-alt' ?> 
-                                                          text-primary fa-2x"></i>
+                                                <i class="<?= !empty($menu_item->icon) ? $menu_item->icon : 'fas fa-info-circle' ?> 
+                                                          text-info fa-2x"></i>
                                             </div>
                                             <div>
                                                 <h6 class="card-title mb-1 text-dark"><?= htmlspecialchars($menu_item->title) ?></h6>
@@ -74,7 +74,7 @@
 
             <!-- Back to Home -->
             <div class="text-center mt-5">
-                <a href="<?= site_url('/') ?>" class="btn btn-outline-primary">
+                <a href="<?= site_url('/') ?>" class="btn btn-outline-info">
                     <i class="fas fa-arrow-left me-2"></i>Kembali ke Beranda
                 </a>
             </div>

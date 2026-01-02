@@ -28,7 +28,7 @@ class Program_studi extends CI_Controller
         $jenjang_list = $this->M_prodi->get_jenjang_list(); // Get dari database dengan count
 
         $data = array(
-            'title' => 'Program Studi',
+            'page_title' => 'Program Studi',
             'meta_description' => 'Daftar Program Studi yang tersedia di institusi kami',
             'meta_keywords' => 'program studi, jurusan, pendidikan, kuliah',
             'prodi_list' => $prodi_list,
@@ -67,7 +67,7 @@ class Program_studi extends CI_Controller
         $related_programs = $this->M_prodi->get_related_programs($prodi->jenjang, $prodi->id, 4);
 
         $data = array(
-            'title' => $prodi->nama_prodi,
+            'page_title' => $prodi->nama_prodi,
             'meta_description' => $prodi->deskripsi ? character_limiter(strip_tags($prodi->deskripsi), 160) : 'Program Studi ' . $prodi->nama_prodi,
             'meta_keywords' => $prodi->nama_prodi . ', ' . $prodi->jenjang . ', ' . $prodi->kode_prodi,
             'prodi' => $prodi,

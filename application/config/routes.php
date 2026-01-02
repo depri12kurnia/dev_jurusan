@@ -117,6 +117,10 @@ $route['kemahasiswaan'] = 'kemahasiswaan';
 $route['tentang/(:any)'] = 'tentang/index/$1';
 $route['tentang'] = 'tentang';
 
+// Penelitian Routes (Frontend)
+$route['penelitian/(:any)'] = 'penelitian/index/$1';
+$route['penelitian'] = 'penelitian';
+
 // SDM Routes (Frontend)
 $route['sdm'] = 'sdm/index';
 $route['sdm/detail-dosen/(:num)'] = 'sdm/detail_dosen/$1';
