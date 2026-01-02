@@ -118,8 +118,10 @@ $route['tentang/(:any)'] = 'tentang/index/$1';
 $route['tentang'] = 'tentang';
 
 // Penelitian Routes (Frontend)
-$route['penelitian/(:any)'] = 'penelitian/index/$1';
+
+// Penelitian Routes (Frontend)
 $route['penelitian'] = 'penelitian';
+$route['penelitian/(:any)'] = 'penelitian/index/$1';
 
 // SDM Routes (Frontend)
 $route['sdm'] = 'sdm/index';
